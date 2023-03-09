@@ -3,7 +3,7 @@ mongoose.set("strictQuery", false);
 
 const db = async () => {
     try {
-        const connection = await mongoose.connect('mongodb://0.0.0.0:27017/FliqReact',
+        const connection = await mongoose.connect('mongodb://0.0.0.0:27017/learnwise',
             {
                 useNewUrlParser: true,
                 useUnifiedTopology: true

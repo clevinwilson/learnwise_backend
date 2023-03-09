@@ -1,9 +1,8 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const {generateOtp,doSignup} =require('../controller/authController')
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.json({status:"Success"})
-});
+router.post('/signup', generateOtp );
 
 module.exports = router;

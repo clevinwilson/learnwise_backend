@@ -1,15 +1,16 @@
-
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
+const session = require('express-session');
 const db = require('./config/db');
+const app = express();
+
+require('dotenv').config();
+
 const usersRouter = require('./routes/userRouter');
 
-
-
-const app = express();
 
 app.use(
   cors({
@@ -18,6 +19,12 @@ app.use(
     credentials: true
   })
 );
+
+app.use(session({
+  secret: 'learnwise3490283',
+  resave: false,
+  saveUninitialized: true,
+}))
 
 
 // view engine setup
