@@ -71,7 +71,7 @@ const doLogin=async(req,res,next)=>{
             res.json({ created: false, message:"Incorrect username or password"});
         }
     } else {
-        const errors = { name: "User Name not exists" }
+        const errors = { name: "Email not exists" }
         res.json({ errors, created: false })
     }
 }

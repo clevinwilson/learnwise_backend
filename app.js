@@ -10,7 +10,7 @@ const app = express();
 require('dotenv').config();
 
 const usersRouter = require('./routes/userRouter');
-
+const adminRouter = require('./routes/adminRouter');
 
 app.use(
   cors({
@@ -38,6 +38,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', usersRouter);
+app.use('/admin',adminRouter);
 
 
 //db connection
