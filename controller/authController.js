@@ -1,7 +1,18 @@
 const userModel = require('../models/userModel');
 const { sendVerificationCode, verifyOtp } = require('../helpers/otp_verification');
+const jwt = require('jsonwebtoken');
+const maxAge = 3 * 24 * 60 * 60;
+const bcrypt = require('bcrypt');
+const secret_key = process.env.SECRET_KEY;
+
 
 let userDetais;
+
+const createTocken = (id) => {
+    return jwt.sign({ id }, secret_key, {
+        expiresIn: maxAge
+    });
+}
 
 
 const generateOtp = async (req, res, next) => {
@@ -42,4 +53,27 @@ const doSignup = async (req, res, next) => {
     }
 }
 
-module.exports = { generateOtp, doSignup }
+const doLogin=async(req,res,next)=>{
+    const { email, password } = req.body;
+    const user = await userModel.findOne({ email: email });
+    if (user) {
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (validPassword) {
+            const token = createTocken(user._id);
+            res.cookie("jwt", token, {
+                withCredential: true,
+                httpOnly: false,
+                maxAge: maxAge * 1000
+            })
+            user.password="empty"
+            res.status(200).json({ user, token, created: true });
+        } else {
+            res.json({ created: false, message:"Incorrect username or password"});
+        }
+    } else {
+        const errors = { name: "User Name not exists" }
+        res.json({ errors, created: false })
+    }
+}
+
+module.exports = { generateOtp, doSignup, doLogin }
