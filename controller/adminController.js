@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const maxAge = 3 * 24 * 60 * 60;
 const bcrypt = require('bcrypt');
 const secret_key = process.env.SECRET_KEY;
+const teacherSchema = require('../models/teacherModel');
+const { sendEmail } =require('../helpers/sendEmail')
 
 const createTocken = (id) => {
     return jwt.sign({ id }, secret_key, {
@@ -38,5 +40,41 @@ const doLogin=async(req,res,next)=>{
     }
 }
 
+const addTeacher=async(req,res)=>{
+    const {firstName,lastName,email,place}=req.body;
+    const randomNum = Math.floor(Math.random() * 1000000);
+    const password = randomNum.toString().padStart(6, '0');
 
-module.exports={doLogin}
+    const teacher=await teacherSchema.findOne({email:email});
+    if(!teacher){
+        const newTeacher=new teacherSchema({
+            firstName:firstName,
+            lastName:lastName,
+            email:email,
+            password: password,
+            place:place
+        })
+        newTeacher.save()
+        .then(async(data)=>{
+            const emailSend=await sendEmail(email, password)
+            console.log(emailSend);
+            if(emailSend.status){
+                res.json({ created: true, message: "Teacher Details added successfully" });
+            }
+            else{
+
+                res.json({ created: false, message: "Email Not Send" });
+            }
+            
+        })
+        .catch((err)=>{
+            console.log(err);
+            res.json({ created: false, message:"Error"});
+        })
+    }else{
+        res.json({created:false,message:"Teacher already exists"});
+    }
+}
+
+
+module.exports = { doLogin, addTeacher }
