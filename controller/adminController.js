@@ -16,7 +16,6 @@ const createTocken = (id) => {
 
 
 const doLogin=async(req,res,next)=>{
-    console.log(req.body,"admin");
     const {email,password}=req.body;
     const admin=await adminModel.findOne({email:email});
     if(admin){
@@ -41,7 +40,8 @@ const doLogin=async(req,res,next)=>{
 }
 
 const addTeacher=async(req,res)=>{
-    const {firstName,lastName,email,place}=req.body;
+    const {firstName,lastName,email,phone,place}=req.body;
+    console.log(place);
     const randomNum = Math.floor(Math.random() * 1000000);
     const password = randomNum.toString().padStart(6, '0');
 
@@ -51,13 +51,13 @@ const addTeacher=async(req,res)=>{
             firstName:firstName,
             lastName:lastName,
             email:email,
+            phone:phone,
             password: password,
             place:place
         })
         newTeacher.save()
         .then(async(data)=>{
             const emailSend=await sendEmail(email, password)
-            console.log(emailSend);
             if(emailSend.status){
                 res.json({ created: true, message: "Teacher Details added successfully" });
             }

@@ -11,6 +11,7 @@ require('dotenv').config();
 
 const usersRouter = require('./routes/userRouter');
 const adminRouter = require('./routes/adminRouter');
+const teacherRouter = require('./routes/teacherRouter')
 
 app.use(
   cors({
@@ -39,6 +40,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', usersRouter);
 app.use('/admin',adminRouter);
+app.use('/teacher',teacherRouter);
 
 
 //db connection

@@ -23,7 +23,7 @@ const sendEmail=(email,password)=>{
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
                 console.log("email error");
-                reject();
+                reject(error);
             } else {
                 console.log("email sent");
                 resolve({ status: true })
