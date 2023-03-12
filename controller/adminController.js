@@ -28,14 +28,13 @@ const doLogin=async(req,res,next)=>{
                 maxAge: maxAge * 1000
             })
             admin.password = "empty"
-            res.status(200).json({ admin, token, created: true });
+            res.status(200).json({ admin, token, login: true });
         } else {
-            res.json({ created: false, message: "Incorrect username or password" });
+            res.json({ login: false, message: "Incorrect username or password" });
         }
 
     } else {
-        const errors = { name: "Email not exists" }
-        res.json({ errors, created: false })
+        res.json({ message: "Email not exists", login: false })
     }
 }
 

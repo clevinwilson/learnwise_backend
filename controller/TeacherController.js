@@ -14,25 +14,18 @@ const createTocken = (id) => {
 
 const doLogin = async (req, res, next) => {
     const { email, password } = req.body;
-    const admin = await teacherModel.findOne({ email: email });
-    if (admin) {
-        const validPassword = await bcrypt.compare(password, admin.password);
+    const teacher= await teacherModel.findOne({ email: email });
+    if (teacher) {
+        const validPassword = await bcrypt.compare(password, teacher.password);
         if (validPassword) {
-            const token = createTocken(admin._id);
-            res.cookie("jwt", token, {
-                withCredential: true,
-                httpOnly: false,
-                maxAge: maxAge * 1000
-            })
-            admin.password = "empty"
-            res.status(200).json({ admin, token, created: true });
+            const token = createTocken(teacher._id);
+            teacher.password = "empty"
+            res.status(200).json({ teacher, token, login: true });
         } else {
-            res.json({ created: false, message: "Incorrect username or password" });
+            res.json({ login: false, message: "Incorrect username or password" });
         }
-
     } else {
-        const errors = { name: "Email not exists" }
-        res.json({ errors, created: false })
+        res.json({ message: "Email not exists", login: false })
     }
 }
 
