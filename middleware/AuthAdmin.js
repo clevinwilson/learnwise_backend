@@ -14,7 +14,7 @@ const verifyAdminLogin = (req, res, next) => {
             } else {
                 const admin = adminModel.findById({ _id: decoded.id });
                 if (admin) {
-                    res.json({ status: true });
+                    // res.json({ status: true });
                     next()
                 } else {
                     res.json({ status: false, message: "Admin not exists" })

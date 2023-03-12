@@ -40,7 +40,6 @@ const doLogin=async(req,res,next)=>{
 
 const addTeacher=async(req,res)=>{
     const {firstName,lastName,email,phone,place}=req.body;
-    console.log(place);
     const randomNum = Math.floor(Math.random() * 1000000);
     const password = randomNum.toString().padStart(6, '0');
 
