@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const maxAge = 3 * 24 * 60 * 60;
 const bcrypt = require('bcrypt');
 const secret_key = process.env.SECRET_KEY;
+const passport = require('passport');
 
 
 let userDetais;
@@ -17,19 +18,19 @@ const createTocken = (id) => {
 
 const generateOtp = async (req, res, next) => {
     try {
-       let user=await userModel.findOne({email:req.body.email});
-        if(!user){
+        let user = await userModel.findOne({ email: req.body.email });
+        if (!user) {
 
             sendVerificationCode(req.body.email, req)
-            .then((response) => {
-                res.json({ status: true, message: "OTP successfully send" })
-                userDetais = req.body;
-            }).catch((response) => {
-                res.json({ status: false, message: "OTP not send" })
-                
-            })
-        }else{
-            res.json({ status: false, message:"Email already exists "})
+                .then((response) => {
+                    res.json({ status: true, message: "OTP successfully send" })
+                    userDetais = req.body;
+                }).catch((response) => {
+                    res.json({ status: false, message: "OTP not send" })
+
+                })
+        } else {
+            res.json({ status: false, message: "Email already exists " })
         }
     } catch (err) {
         res.status(500).json({ serverError: true, message: "Internal server error" })
@@ -39,10 +40,10 @@ const generateOtp = async (req, res, next) => {
 const doSignup = async (req, res, next) => {
     try {
         verifyOtp(req.body.otp)
-            .then(async(response) => {
-                const{firstName,email,password}=userDetais;
-                const user = await userModel.create({ firstName, email,password });
-                res.status(200).json({ status: true, message: "OTP verified successfully" })
+            .then(async (response) => {
+                const { firstName, email, password } = userDetais;
+                const user = await userModel.create({ firstName, email, password });
+                res.status(201).json({ status: true, message: "OTP verified successfully" })
             })
             .catch((response) => {
                 res.json({ status: false, message: "OTP not match" })
@@ -53,22 +54,18 @@ const doSignup = async (req, res, next) => {
     }
 }
 
-const doLogin=async(req,res,next)=>{
+const doLogin = async (req, res, next) => {
     const { email, password } = req.body;
     const user = await userModel.findOne({ email: email });
     if (user) {
         const validPassword = await bcrypt.compare(password, user.password);
         if (validPassword) {
             const token = createTocken(user._id);
-            res.cookie("jwt", token, {
-                withCredential: true,
-                httpOnly: false,
-                maxAge: maxAge * 1000
-            })
-            user.password="empty"
+
+            user.password = "empty"
             res.status(200).json({ user, token, login: true });
         } else {
-            res.json({ login: false, message:"Incorrect username or password"});
+            res.json({ login: false, message: "Incorrect username or password" });
         }
     } else {
 
@@ -76,4 +73,22 @@ const doLogin=async(req,res,next)=>{
     }
 }
 
-module.exports = { generateOtp, doSignup, doLogin }
+const googleAuth = (req, res) => {
+    if(req.user){
+        const token = createTocken(req.user._id);
+        res.status(200).json({ user: req.user, token, login: true });
+    }else{
+        res.status(401).json({message:"Not authorized"});
+    }
+   
+
+}
+
+const googleAuthFaild = (req, res) => {
+    console.log("google faild");
+}
+
+
+
+
+module.exports = { generateOtp, doSignup, doLogin, googleAuth, googleAuthFaild }

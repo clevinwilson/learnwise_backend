@@ -19,6 +19,13 @@ const userSchema = new mongoose.Schema({
         type: Number,
 
     },
+    loginWithGoogle: {
+        type: Boolean,
+        default: false,
+    },
+    picture:{
+        type:String
+    },
     password: {
         type: String,
         required: [true, "Password is required"]
