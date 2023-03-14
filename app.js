@@ -1,13 +1,14 @@
 const express = require('express');
 require('dotenv').config();
 
+
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
 const session = require('express-session');
 const db = require('./config/db');
-const passportSetUp = require('./helpers/passport');
+// const passportSetUp = require('./helpers/passport');
 
 const app = express();
 
@@ -15,11 +16,12 @@ app.use(session({
   secret: 'learnwise3490283',
   resave: false,
   saveUninitialized: true,
-}))
+}));
+
 
 const usersRouter = require('./routes/userRouter');
 const adminRouter = require('./routes/adminRouter');
-const teacherRouter = require('./routes/teacherRouter')
+const teacherRouter = require('./routes/teacherRouter');
 
 app.use(
   cors({
@@ -31,15 +33,10 @@ app.use(
 
 
 
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
+
 
 app.use('/', usersRouter);
 app.use('/admin',adminRouter);

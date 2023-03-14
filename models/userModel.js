@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
         type: Number,
 
     },
+    googleId:{
+        type:String,
+        allowNull:true
+    },
     loginWithGoogle: {
         type: Boolean,
         default: false,

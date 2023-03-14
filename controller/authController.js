@@ -4,7 +4,9 @@ const jwt = require('jsonwebtoken');
 const maxAge = 3 * 24 * 60 * 60;
 const bcrypt = require('bcrypt');
 const secret_key = process.env.SECRET_KEY;
-const passport = require('passport');
+const axios = require('axios');
+const User = require('../models/userModel');
+
 
 
 let userDetais;
@@ -74,21 +76,47 @@ const doLogin = async (req, res, next) => {
 }
 
 const googleAuth = (req, res) => {
-    if(req.user){
-        const token = createTocken(req.user._id);
-        res.status(200).json({ user: req.user, token, login: true });
-    }else{
-        res.status(401).json({message:"Not authorized"});
+
+
+    if (req.body.access_token) {
+        axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${req.body.access_token}`).then(async (response) => {
+
+            const user = await User.findOne({ googleId: response.data.id, loginWithGoogle: true }, { password:0}).catch((err) => {
+                console.log("Error Signup");
+                res.status(500).json({ created: false, message: "Internal server error" })
+            });
+
+            const token = createTocken(user._id);
+
+            if (user) {
+                res.status(200).json({ created: true, user, token, message: "Login Success" })
+
+            } else {
+                const newUser = await User.create({
+                    googleId: response.data.id,
+                    firstName: response.data.given_name,
+                    lastName: response.data.family_name,
+                    email: response.data.email,
+                    loginWithGoogle: true,
+                    picture: response.data.picture,
+                    password: response.data.id
+                });
+
+                res.status(200).json({ created: true, newUser, token, message: "Signup Success" })
+
+            }
+        })
+    } else {
+        res.status(401).json({ message: "Not authorized" });
     }
-   
 
-}
 
-const googleAuthFaild = (req, res) => {
-    console.log("google faild");
+
 }
 
 
 
 
-module.exports = { generateOtp, doSignup, doLogin, googleAuth, googleAuthFaild }
+
+
+module.exports = { generateOtp, doSignup, doLogin, googleAuth }

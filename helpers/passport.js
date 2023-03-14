@@ -12,11 +12,17 @@ passport.use(new GoogleStrategy(
         scope: ["profile", "email"]
     },
     async function (accessToken, refreshToken, profile, cb) {
-        const user = await User.findOne({ email: profile.emails[0].value,loginWithGoogle:true});
+        const user = await User.findOne({ googleId: profile.id,loginWithGoogle:true}).catch((err)=>{
+            console.log("Error Signup");
+            cb(err,null);
+        });
+
+
         if(user){
-            return cb(null,user);
+             cb(null,user);
         }else{
             const newUser=await User.create({
+                googleId:profile.id,
                 firstName:profile.name.givenName,
                 lastName:profile.name.familyName,
                 email:profile.emails[0].value,
@@ -25,7 +31,7 @@ passport.use(new GoogleStrategy(
                 password:profile.id
             });
 
-            return cb(null,newUser);
+             cb(null,newUser);
         }
     }
 ));
@@ -35,7 +41,11 @@ passport.serializeUser((user, cb) => {
     cb(null, user);
 });
 
-passport.deserializeUser((obj, cb) => {
-    console.log(obj);
-    cb(null, obj);
+passport.deserializeUser(async(obj, cb) => {
+    const user = await User.findOne({ googleId: obj.id, loginWithGoogle: true }).catch((err) => {
+        console.log("Error deserializeUser");
+        cb(err, null);
+    });
+
+    if(user) cb(null, obj);
 });

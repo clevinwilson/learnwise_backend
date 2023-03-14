@@ -4,14 +4,14 @@ const { generateOtp, doSignup, doLogin, googleAuth, googleAuthFaild } =require('
 const passport = require('passport');
 
 
+
+
 /* user auth router */
 router.post('/signup', generateOtp );
 router.post('/otp',doSignup);
 router.post('/login',doLogin);
 
 //google auth
-// router.get('/auth/google',passport.authenticate('google', { scope: ['profile', 'email'] }));
-router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login/failed' }),googleAuth);
-router.get('/login/failed',googleAuthFaild)
+router.post('/login/google', googleAuth);
 
 module.exports = router;
