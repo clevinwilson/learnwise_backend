@@ -75,4 +75,31 @@ const addTeacher=async(req,res)=>{
 }
 
 
-module.exports = { doLogin, addTeacher }
+
+const authAdmin = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    console.log(authHeader);
+    if (authHeader) {
+        const token = authHeader.split(' ')[1];
+        jwt.verify(token, secret_key, async (err, decoded) => {
+            // console.log(decoded.iat);
+
+            if (err) {
+                res.json({ status: false, message: "Unauthorized" });
+            } else {
+                const admin = adminModel.findById({ _id: decoded.id });
+                if (admin) {
+                    res.json({ status: true, message:"Authorized" });
+                    
+                } else {
+                    res.json({ status: false, message: "Admin not exists" })
+                }
+            }
+        });
+    } else {
+        res.json({ status: false, message: 'Token not provided' })
+    }
+}
+
+
+module.exports = { doLogin, addTeacher, authAdmin }

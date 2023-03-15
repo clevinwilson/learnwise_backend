@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { generateOtp, doSignup, doLogin, googleAuth, googleAuthFaild } =require('../controller/authController')
-const passport = require('passport');
+const { generateOtp, doSignup, doLogin, googleAuth } =require('../controller/authController');
+
 
 
 
@@ -13,5 +13,9 @@ router.post('/login',doLogin);
 
 //google auth
 router.post('/login/google', googleAuth);
+
+
+
+
 
 module.exports = router;
