@@ -65,4 +65,8 @@ const teacherAuth=(req,res)=>{
 }
 
 
+
+
+
+
 module.exports = { doLogin, teacherAuth }
