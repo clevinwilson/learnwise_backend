@@ -9,8 +9,7 @@ const verifyLogin = (req, res, next) => {
             // console.log(decoded.iat);
 
             if (err) {
-                res.json({ status: false });
-
+                res.userId=
                 next();
             } else {
                 const user = userModel.findById({ _id: decoded.id });

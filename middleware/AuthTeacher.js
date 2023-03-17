@@ -1,23 +1,26 @@
 const teacherModel = require('../models/teacherModel');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const secret_key = process.env.SECRET_KEY;
 
-const verifyAdminLogin = (req, res, next) => {
+const verifyTeacherLogin = (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
         if (authHeader) {
             const token = authHeader.split(' ')[1];
 
             jwt.verify(token, secret_key, async (err, decoded) => {
-                // console.log(decoded.iat);
-
+               
                 if (err) {
                     res.json({ status: false, message: "Permission not allowed" });
                 } else {
-                    const teacher = teacherModel.findById({ _id: decoded.id });
+                    
+                    const teacher =await teacherModel.findOne({ _id:decoded.id})
                     if (teacher) {
-                        next()
+                        res.teacherId = decoded.id
+                         next()
                     } else {
+                        console.log("err");
                         res.json({ status: false, message: "Admin not exists" });
                     }
                 }
@@ -30,4 +33,4 @@ const verifyAdminLogin = (req, res, next) => {
     }
 }
 
-module.exports = { verifyAdminLogin }
+module.exports = { verifyTeacherLogin }
