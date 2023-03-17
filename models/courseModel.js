@@ -17,6 +17,10 @@ const CourseSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    price:{
+        type: Number,
+        required: true
+    },
     description: {
         type: String,
         required: true
@@ -25,7 +29,7 @@ const CourseSchema = new mongoose.Schema({
         {
             chapter:String,
             image:String,
-            course:[
+            lessons:[
                 {
                     chapterName:String,
                     lessonName:String,
