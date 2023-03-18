@@ -172,7 +172,6 @@ const blockUser=async(req,res)=>{
 
 
 const unBlockUser=async(req,res)=>{
-    console.log("user", ">>>>>>>>>>>>");
 
     try {
         const user = await userModel.findOne({ _id: req.params.userId });
@@ -194,4 +193,25 @@ const unBlockUser=async(req,res)=>{
     }
 }
 
-module.exports = { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher, getAllUsers, blockUser, unBlockUser }
+const unBlockTeacher=async(req,res)=>{
+    try {
+        const user = await teacherModel.findOne({ _id: req.params.teacherId });
+        if (user) {
+            teacherModel.updateOne({ _id: req.params.teacherId }, {
+                $set: {
+                    status: true
+                }
+            }).then((response) => {
+                res.status(200).json({ status: true, message: "User Blocked Successfully" });
+            }).catch((err) => {
+                res.status(500).json({ status: false, message: "Internal server error" });
+            })
+        } else {
+            res.status(404).json({ status: false, message: "User Not Found" });
+        }
+    } catch (err) {
+        res.status(500).json({ status: false, message: "Internal server error" });
+    }
+}
+
+module.exports = { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher, getAllUsers, blockUser, unBlockUser, unBlockTeacher }
