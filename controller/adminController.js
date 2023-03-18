@@ -1,5 +1,4 @@
 const adminModel=require('../models/adminModel')
-const { sendVerificationCode, verifyOtp } = require('../helpers/otp_verification');
 const jwt = require('jsonwebtoken');
 const maxAge = 3 * 24 * 60 * 60;
 const bcrypt = require('bcrypt');

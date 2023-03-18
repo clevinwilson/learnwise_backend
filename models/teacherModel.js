@@ -26,6 +26,10 @@ const teacherSchema=new mongoose.Schema({
     password:{
         type:String,
     },
+    login:{
+        type: Boolean,
+        default: false,
+    },
     about:{
         type:String,
     }
