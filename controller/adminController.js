@@ -4,7 +4,8 @@ const maxAge = 3 * 24 * 60 * 60;
 const bcrypt = require('bcrypt');
 const secret_key = process.env.SECRET_KEY;
 const teacherSchema = require('../models/teacherModel');
-const { sendEmail } =require('../helpers/sendEmail')
+const { sendEmail } =require('../helpers/sendEmail');
+const teacherModel = require('../models/teacherModel');
 
 const createTocken = (id) => {
     return jwt.sign({ id }, secret_key, {
@@ -77,7 +78,6 @@ const addTeacher=async(req,res)=>{
 
 const authAdmin = (req, res, next) => {
     const authHeader = req.headers.authorization;
-    console.log(authHeader);
     if (authHeader) {
         const token = authHeader.split(' ')[1];
         jwt.verify(token, secret_key, async (err, decoded) => {
@@ -101,4 +101,36 @@ const authAdmin = (req, res, next) => {
 }
 
 
-module.exports = { doLogin, addTeacher, authAdmin }
+const getAllTeachers=(req,res)=>{
+    try{
+        teacherModel.find().then((response)=>{
+            res.status(200).json({ status: true, teachers: response })
+        })
+    }catch(err){
+        res.status(500).json({ created: false, message: "Internal server error" })
+
+    }
+}
+
+const blockTeacher=async (req,res)=>{
+    try{
+        const teacher = await teacherModel.findOne({ _id: req.params.teacherId });
+        if(teacher){
+            teacherModel.updateOne({ _id: req.params.teacherId },{
+                $set:{
+                    status:false
+                }
+            }).then((response)=>{
+                res.status(200).json({ status: true, message:"Teacher Blocker Successfully"});
+            }).catch((err)=>{
+                res.status(500).json({ status: false, message: "Internal server error" });
+            })
+        }else{
+            res.status(404).json({ status :false,message:"User Not Found"});
+        }
+    }catch(err){
+        res.status(500).json({ status: false, message: "Internal server error" });
+    }
+}
+
+module.exports = { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher }

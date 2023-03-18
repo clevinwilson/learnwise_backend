@@ -42,7 +42,6 @@ const teacherAuth=(req,res)=>{
         if (authHeader) {
             const token = authHeader.split(' ')[1];
 
-            console.log(token,">>>>>>>>>>");
             jwt.verify(token, secret_key, async (err, decoded) => {
                 // console.log(decoded.iat);
 
