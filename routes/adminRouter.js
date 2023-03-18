@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher } =require('../controller/adminController');
+const { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher, getAllUsers, blockUser } =require('../controller/adminController');
 const {verifyAdminLogin} = require('../middleware/AuthAdmin');
 
 
@@ -13,6 +13,10 @@ router.post('/login',doLogin);
 router.post('/add-teacher', verifyAdminLogin,addTeacher);
 router.get('/teacher',verifyAdminLogin,getAllTeachers);
 router.get('/block-teacher/:teacherId',verifyAdminLogin,blockTeacher);
+
+router.get("/user",verifyAdminLogin,getAllUsers);
+router.get('/block-user/:userId', verifyAdminLogin, blockUser);
+
 
 
 module.exports = router;
