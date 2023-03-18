@@ -1,3 +1,4 @@
+const { response } = require('express');
 const courseModel = require('../models/courseModel');
 const Course = require('../models/courseModel');
 
@@ -42,4 +43,23 @@ const getCourse=async(req,res)=>{
 
 }
 
-module.exports = { addCourse, getCourse }
+const deleteCourse=async(req,res)=>{
+    try{
+        courseModel.findOneAndDelete({_id:req.params.courseId})
+        .then((response)=>{
+            console.log(response);
+            res.status(200).json({ status: true, message:"Course deleted successfully "})
+        })
+        .catch((error)=>{
+
+            res.status(500).json({ status: false, message: "Internal server error" });
+        })
+    } catch (error){
+        console.log(error);
+
+        res.status(500).json({ status: false, message: "Internal server error" });
+
+    }
+}
+
+module.exports = { addCourse, getCourse, deleteCourse }

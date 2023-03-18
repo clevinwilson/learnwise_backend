@@ -6,6 +6,7 @@ const secret_key = process.env.SECRET_KEY;
 const verifyTeacherLogin = (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
+        
         if (authHeader) {
             const token = authHeader.split(' ')[1];
 
