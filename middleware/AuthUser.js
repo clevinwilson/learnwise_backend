@@ -3,28 +3,31 @@ const jwt = require('jsonwebtoken');
 const secret_key = process.env.SECRET_KEY;
 
 const verifyLogin = (req, res, next) => {
-    const token = req.cookies.jwt;
-    if (token) {
-        jwt.verify(token, secret_key, async (err, decoded) => {
-            // console.log(decoded.iat);
+    try {
+        const authHeader = req.headers.authorization;
+        if (authHeader) {
+            const token = authHeader.split(' ')[1];
+            jwt.verify(token, secret_key, async (err, decoded) => {
+                // console.log(decoded.iat);
+                console.log(decoded);
 
-            if (err) {
-                res.userId=
-                next();
-            } else {
-                const user = userModel.findById({ _id: decoded.id });
-                if (user) {
-                    res.json({ status: true, user: user.name });
-                    next()
+                if (err) {
+                    res.json({ status: false, message: "Unauthorized" });
                 } else {
-                    res.json({ status: false })
-                    next()
+                    const user = await userModel.findOne({ _id: decoded.id });
+                    if (user) {
+                        next();
+                    } else {
+                        res.status(404).json({ status: false, message: "User not exists" })
+                    }
                 }
-            }
-        });
-    } else {
-        res.json({ status: false })
-        next()
+            });
+        } else {
+            res.json({ status: false, message: 'Token not provided' })
+        }
+    } catch (err) {
+        res.status(401).json({ message: "Not authorized" });
+
     }
 }
 

@@ -109,14 +109,41 @@ const googleAuth = (req, res) => {
     } else {
         res.status(401).json({ message: "Not authorized" });
     }
+}
 
 
+const userAuthentication=(req,res)=>{
+    try{
+        const authHeader = req.headers.authorization;
+        if (authHeader) {
+            const token = authHeader.split(' ')[1];
+            jwt.verify(token, secret_key, async (err, decoded) => {
+                // console.log(decoded.iat);
+                console.log(decoded);
 
+                if (err) {
+                    res.json({ status: false, message: "Unauthorized" });
+                } else {
+                    const user =await userModel.findOne({ _id: decoded.id });
+                    if (user) {
+                        res.status(200).json({ status: true,user, message: "Authorized" });
+
+                    } else {
+                        res.status(404).json({ status: false, message: "User not exists" })
+                    }
+                }
+            });
+        } else {
+            res.json({ status: false, message: 'Token not provided' })
+        }
+    }catch(err){
+        res.status(401).json({ message: "Not authorized" });
+
+    }
 }
 
 
 
 
 
-
-module.exports = { generateOtp, doSignup, doLogin, googleAuth }
+module.exports = { generateOtp, doSignup, doLogin, googleAuth, userAuthentication }
