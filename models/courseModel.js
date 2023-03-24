@@ -5,8 +5,13 @@ const CourseSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    teacherId:{
+    about:{
+        type: String,
+        required: true,
+    },
+    teacher:{
         type:mongoose.Schema.Types.ObjectId,
+        ref: 'Teachers',
         required:true,
     },
     category: {
