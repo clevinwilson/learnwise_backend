@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const secret_key = process.env.SECRET_KEY;
 const axios = require('axios');
 const User = require('../models/userModel');
+const { response } = require('../app');
 
 
 
@@ -131,7 +132,7 @@ const userAuthentication=(req,res)=>{
                         res.status(200).json({ status: true,user, message: "Authorized" });
 
                     } else {
-                        res.status(404).json({ status: false, message: "User not exists" })
+                        res.json({ status: false, message: "User not exists" })
                     }
                 }
             });
