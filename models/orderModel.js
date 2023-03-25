@@ -5,17 +5,17 @@ const OrderSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
-    courseId: {
+    course: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Courses',
         required: true,
     },
-    userId: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Users',
         required: true,
     },
-    teacherId: {
+    teacher: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Teachers',
         required: true,

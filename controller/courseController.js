@@ -2,6 +2,7 @@ const { response } = require('express');
 const { default: mongoose } = require('mongoose');
 const courseModel = require('../models/courseModel');
 const Course = require('../models/courseModel');
+const orderModel = require('../models/orderModel');
 const { findById } = require('../models/userModel');
 
 const addCourse = async (req, res) => {
@@ -89,6 +90,7 @@ const getCourseDetails = async (req, res) => {
             res.status(200).json({ status: true, courseDetails: response });
 
         }).catch((err) => {
+            console.log(err);
             throw new Error('Internal server error');
         })
     } catch (err) {
@@ -109,4 +111,13 @@ const getAllCourses=async(req,res)=>{
     }
 }
 
-module.exports = { addCourse, getCourse, deleteCourse, getTopCourse, getCourseDetails, getAllCourses }
+const getEnrolledCourse=async(req,res)=>{
+    try{
+        let enrolledCourse = await orderModel.find({ user: req.userId }).populate('teacher').populate('course')
+        res.status(200).json({ status: true, enrolledCourse});
+
+    }catch(err){
+        res.status(500).json({ status: false, message: err.message });
+    }
+}
+module.exports = { addCourse, getCourse, deleteCourse, getTopCourse, getCourseDetails, getAllCourses, getEnrolledCourse }

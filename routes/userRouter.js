@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { generateOtp, doSignup, doLogin, googleAuth, userAuthentication } =require('../controller/authController');
-const { getTopCourse, getCourseDetails, getAllCourses } = require('../controller/courseController');
+const { getTopCourse, getCourseDetails, getAllCourses, getEnrolledCourse } = require('../controller/courseController');
 const { doPayment, verifyPayment, cancelOrder } = require('../controller/paymentController');
 const { verifyLogin } = require('../middleware/AuthUser');
 
@@ -26,7 +26,8 @@ router.get('/course-details/:courseId',getCourseDetails);
 router.get('/course',getAllCourses)
 
 
-
+///enrolled course
+router.get('/enrolled-course',verifyLogin,getEnrolledCourse)
 
 
 //payment
