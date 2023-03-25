@@ -86,9 +86,10 @@ const googleAuth = (req, res) => {
                 res.status(500).json({ created: false, message: "Internal server error" })
             });
 
-            const token = createTocken(user._id);
 
             if (user) {
+                const token = createTocken(user._id);
+
                 res.status(200).json({ created: true, user, token, message: "Login Success" })
 
             } else {
@@ -101,8 +102,9 @@ const googleAuth = (req, res) => {
                     picture: response.data.picture,
                     password: response.data.id
                 });
+                const token = createTocken(newUser._id);
 
-                res.status(200).json({ created: true, newUser, token, message: "Signup Success" })
+                res.status(200).json({ created: true, user:newUser, token, message: "Signup Success" })
 
             }
         })

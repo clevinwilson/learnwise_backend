@@ -24,8 +24,8 @@ const doPayment = async (req, res) => {
                     line_items: [
                         {
                             currency: "inr",
-                            name: "Phone",
-                            // images: ["http://localhost:3000/images/course/thumbnail/1679497306716-course1.jpg"],
+                            name: course.name,
+                             images: ["https://img-b.udemycdn.com/course/240x135/2995336_69f0.jpg"],
                             amount: course.price * 100,
                             quantity: 1,
 
