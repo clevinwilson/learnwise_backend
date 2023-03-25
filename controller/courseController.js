@@ -90,11 +90,13 @@ const getCourseDetails = async (req, res) => {
             res.status(200).json({ status: true, courseDetails: response });
 
         }).catch((err) => {
-            console.log(err);
-            throw new Error('Internal server error');
+            res.status(500).json({ status: false, message: "Internal server error" });
+
+
         })
     } catch (err) {
-        res.status(500).json({ status: false, message: err.message });
+        res.status(500).json({ status: false, message: "Internal server error" });
+
     }
 }
 
