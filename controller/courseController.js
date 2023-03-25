@@ -96,4 +96,17 @@ const getCourseDetails = async (req, res) => {
     }
 }
 
-module.exports = { addCourse, getCourse, deleteCourse, getTopCourse, getCourseDetails }
+const getAllCourses=async(req,res)=>{
+    try {
+        courseModel.find().populate('teacher').lean().then((response) => {
+            res.status(200).json({ status: true, course: response });
+
+        }).catch((err) => {
+            throw new Error('Internal server error');
+        })
+    } catch (err) {
+        res.status(500).json({ status: false, message: err.message });
+    }
+}
+
+module.exports = { addCourse, getCourse, deleteCourse, getTopCourse, getCourseDetails, getAllCourses }
