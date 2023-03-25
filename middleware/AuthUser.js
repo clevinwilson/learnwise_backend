@@ -16,6 +16,7 @@ const verifyLogin = (req, res, next) => {
                 } else {
                     const user = await userModel.findOne({ _id: decoded.id });
                     if (user) {
+                        req.userId=user._id;
                         next();
                     } else {
                         res.status(404).json({ status: false, message: "User not exists" })

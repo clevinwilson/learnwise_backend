@@ -1,5 +1,4 @@
 const express = require('express');
-const { verify } = require('jsonwebtoken');
 const router = express.Router();
 const { generateOtp, doSignup, doLogin, googleAuth, userAuthentication } =require('../controller/authController');
 const { getTopCourse, getCourseDetails, getAllCourses } = require('../controller/courseController');
@@ -32,7 +31,7 @@ router.get('/course',getAllCourses)
 
 //payment
 router.get('/verifyPayment/:orderId',verifyPayment)
-router.post('/create-checkout-session',doPayment);
+router.post('/create-checkout-session',verifyLogin,doPayment);
 router.get('/cancel-payment/:orderId',cancelOrder)
 
 

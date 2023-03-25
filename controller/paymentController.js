@@ -14,7 +14,7 @@ const doPayment = async (req, res) => {
             const newOrder = new orderSchema({
                 total: course.price,
                 courseId: req.body.courseId,
-                userId: "63f2eeb484592647fe3d5aba",
+                userId: req.userId,
                 teacherId: course.teacher,
                 address: { line1: req.body.address, pincode: req.body.pincode },
                 purchase_date: Date.now(),
