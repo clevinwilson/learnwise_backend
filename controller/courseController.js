@@ -90,9 +90,7 @@ const getCourseDetails = async (req, res) => {
             res.status(200).json({ status: true, courseDetails: response });
 
         }).catch((err) => {
-            res.status(500).json({ status: false, message: "Internal server error" });
-
-
+            res.status(500).json({ status: false, message: "something went wrong " });
         })
     } catch (err) {
         res.status(500).json({ status: false, message: "Internal server error" });
@@ -106,10 +104,12 @@ const getAllCourses=async(req,res)=>{
             res.status(200).json({ status: true, course: response });
 
         }).catch((err) => {
-            throw new Error('Internal server error');
+            res.status(500).json({ status: false, message: "Internal server error" });
+
         })
     } catch (err) {
-        res.status(500).json({ status: false, message: err.message });
+        res.status(500).json({ status: false, message: "Internal server error" });
+
     }
 }
 
@@ -119,7 +119,25 @@ const getEnrolledCourse=async(req,res)=>{
         res.status(200).json({ status: true, enrolledCourse});
 
     }catch(err){
-        res.status(500).json({ status: false, message: err.message });
+        res.status(500).json({ status: false, message: "Internal server error" });
+
     }
 }
-module.exports = { addCourse, getCourse, deleteCourse, getTopCourse, getCourseDetails, getAllCourses, getEnrolledCourse }
+
+const isCourseEnrolled=(req,res)=>{
+    try{
+        console.log(req.params.courseId,req.userId);
+         orderModel.find({user:req.userId,course:req.params.courseId}).then((response)=>{
+            if(response[0]){
+                res.status(200).json({ enrolled: true, message: "Course already  exist" });
+            }else{
+                res.status(200).json({ enrolled: false, message: "Course not  exist" });
+            }
+         })
+    }catch(err){
+        res.status(500).json({ status: false, message: "Internal server error" });
+
+    }
+}
+
+module.exports = { addCourse, getCourse, deleteCourse, getTopCourse, getCourseDetails, getAllCourses, getEnrolledCourse, isCourseEnrolled }
