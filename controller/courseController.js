@@ -126,7 +126,6 @@ const getEnrolledCourse=async(req,res)=>{
 
 const isCourseEnrolled=(req,res)=>{
     try{
-        console.log(req.params.courseId,req.userId);
          orderModel.find({user:req.userId,course:req.params.courseId}).then((response)=>{
             if(response[0]){
                 res.status(200).json({ enrolled: true, message: "Course already  exist" });
@@ -140,4 +139,15 @@ const isCourseEnrolled=(req,res)=>{
     }
 }
 
-module.exports = { addCourse, getCourse, deleteCourse, getTopCourse, getCourseDetails, getAllCourses, getEnrolledCourse, isCourseEnrolled }
+const search=(req,res)=>{
+    try{
+        key = req.query.q.replace(/[^a-zA-Z ]/g, "")
+        courseModel.find({ name: { $regex: key, $options: 'i' } }).then((response) => {
+            res.status(200).json({status:true, result:response});
+        })
+    } catch (err) {
+        res.status(500).json({ status: false, message: "Internal server error" });
+    }
+}
+
+module.exports = { addCourse, getCourse, deleteCourse, getTopCourse, getCourseDetails, getAllCourses, getEnrolledCourse, isCourseEnrolled, search }

@@ -1,7 +1,8 @@
 const express = require('express');
+const { routes } = require('../app');
 const router = express.Router();
 const { generateOtp, doSignup, doLogin, googleAuth, userAuthentication } =require('../controller/authController');
-const { getTopCourse, getCourseDetails, getAllCourses, getEnrolledCourse, isCourseEnrolled } = require('../controller/courseController');
+const { getTopCourse, getCourseDetails, getAllCourses, getEnrolledCourse, isCourseEnrolled, search } = require('../controller/courseController');
 const { doPayment, verifyPayment, cancelOrder } = require('../controller/paymentController');
 const { verifyLogin } = require('../middleware/AuthUser');
 
@@ -27,13 +28,16 @@ router.get('/course',getAllCourses);
 router.get('/is-course-enrolled/:courseId',verifyLogin,isCourseEnrolled);
 
 ///enrolled course
-router.get('/enrolled-course',verifyLogin,getEnrolledCourse)
+router.get('/enrolled-course',verifyLogin,getEnrolledCourse);
 
 
 //payment
-router.get('/verifyPayment/:orderId',verifyPayment)
+router.get('/verifyPayment/:orderId',verifyPayment);
 router.post('/create-checkout-session',verifyLogin,doPayment);
-router.get('/cancel-payment/:orderId',cancelOrder)
+router.get('/cancel-payment/:orderId',cancelOrder);
+
+//search
+router.get('/search',search);
 
 
 
