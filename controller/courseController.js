@@ -3,7 +3,6 @@ const { default: mongoose } = require('mongoose');
 const courseModel = require('../models/courseModel');
 const Course = require('../models/courseModel');
 const orderModel = require('../models/orderModel');
-const { findById } = require('../models/userModel');
 
 const addCourse = async (req, res) => {
     try {
@@ -50,7 +49,7 @@ const getCourse = async (req, res) => {
 
 const deleteCourse = async (req, res) => {
     try {
-        courseModel.findOneAndDelete({ _id: req.params.courseId })
+        courseModel.findOneAndDelete({teacher:res.teacherId, _id: req.params.courseId })
             .then((response) => {
                 res.status(200).json({ status: true, message: "Course deleted successfully " })
             })
@@ -60,7 +59,6 @@ const deleteCourse = async (req, res) => {
             })
     } catch (error) {
         console.log(error);
-
         res.status(500).json({ status: false, message: "Internal server error" });
 
     }
