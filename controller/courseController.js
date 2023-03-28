@@ -11,10 +11,11 @@ const addCourse = async (req, res) => {
 
         const newCourse = new Course({
             name: req.body.name,
-            teacherId: res.teacherId,
+            teacher: res.teacherId,
             category: req.body.category,
             duration: req.body.duration,
             language: req.body.language,
+            about:"About Java",
             price: Number(req.body.price),
             description: req.body.description,
             image: req.files.image[0],
@@ -25,6 +26,7 @@ const addCourse = async (req, res) => {
             .then(() => {
                 res.status(200).json({ status: true, message: "Course added Successfully" })
             }).catch((error) => {
+                console.log(error);
                 res.status(500).json({ status: true, message: "Internal server error" })
             })
 
@@ -36,7 +38,7 @@ const addCourse = async (req, res) => {
 
 const getCourse = async (req, res) => {
     try {
-        let course = await courseModel.find({ teacherId: res.teacherId });
+        let course = await courseModel.find({ teacher: res.teacherId });
         if (course) {
             res.status(200).json({ status: true, course })
         }

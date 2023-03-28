@@ -3,13 +3,17 @@ const { now } = require('mongoose');
 const Stripe = require('stripe');
 const courseSchema = require('../models/courseModel');
 const stripe = Stripe(process.env.SECRET_KEY);
-const orderSchema = require('../models/orderModel')
+const orderSchema = require('../models/orderModel');
+const userSchema = require('../models/userModel');
 
 
 
 const doPayment = async (req, res) => {
+    console.log(req.userId);
     try {
-        const course = await courseSchema.findById({ _id: req.body.courseId });;
+        const user=await userSchema.findById({_id:req.userId});
+        if(user.status){
+        const course = await courseSchema.findById({ _id: req.body.courseId });
         if (course) {
             const newOrder = new orderSchema({
                 total: course.price,
@@ -32,6 +36,7 @@ const doPayment = async (req, res) => {
                         }
                     ],
                     mode: 'payment',
+                    customer_email:user.email,
                     success_url: `${process.env.BASE_URL}/verifyPayment/${orderResponse._id}`,
                     cancel_url: `${process.env.BASE_URL}/cancel-payment/${orderResponse._id}`,
                 });
@@ -46,6 +51,7 @@ const doPayment = async (req, res) => {
             res.redirect(`${process.env.CLIENT_URL}/course-payment/${courseId}`);
 
         }
+    }
 
     } catch (err) {
         // res.status(500).json({ status: false, message: "Internal server error" });
