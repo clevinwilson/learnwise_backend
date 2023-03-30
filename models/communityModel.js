@@ -22,7 +22,7 @@ const CommunitySchema = new mongoose.Schema({
         type: String,
     },
     members:{
-        type:[],
+        type: [mongoose.Schema.Types.ObjectId],
     },
     groups: {
         type: [],
