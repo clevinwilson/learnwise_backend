@@ -2,9 +2,11 @@ const express = require('express');
 const { routes } = require('../app');
 const router = express.Router();
 const { generateOtp, doSignup, doLogin, googleAuth, userAuthentication } =require('../controller/authController');
+const { createCommunity } = require('../controller/communityController');
 const { getTopCourse, getCourseDetails, getAllCourses, getEnrolledCourse, isCourseEnrolled, search } = require('../controller/courseController');
 const { doPayment, verifyPayment, cancelOrder } = require('../controller/paymentController');
 const { verifyLogin } = require('../middleware/AuthUser');
+const { uploadCommuniyImage } = require('../middleware/image-upload');
 
 
 
@@ -39,6 +41,8 @@ router.get('/cancel-payment/:orderId',cancelOrder);
 //search
 router.get('/search',search);
 
+//community
+router.post('/create-community',verifyLogin, uploadCommuniyImage,createCommunity)
 
 
 
