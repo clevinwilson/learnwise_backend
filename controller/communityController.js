@@ -1,10 +1,11 @@
 const Community = require('../models/communityModel');
+const User = require('../models/userModel');
 
 
 const handleError = (err) => {
     if (err.code === 11000) {
         return "Community Name is already exists";
-         
+
     }
 
     // if (err.message.includes("Users validation failed")) {
@@ -23,53 +24,67 @@ module.exports.createCommunity = async (req, res) => {
             type: req.body.type,
             about: req.body.about,
             admin: req.userId,
-            image:req.files.image[0]
+            image: req.files.image[0]
         })
         newCommunity.members.push(req.userId);
-        let community=await newCommunity.save()
-        if(community){
-            res.status(200).json({ status: true, message:"Community Created Successfully"})
-        }else{
+        let community = await newCommunity.save()
+        if (community) {
+            res.status(200).json({ status: true, message: "Community Created Successfully" })
+        } else {
             res.json({ status: false, message: "Community Not Created " })
         }
     } catch (err) {
-        let error =handleError(err)
+        let error = handleError(err)
         res.json({ status: false, message: error })
     }
 }
 
-module.exports.getAllCommunity=async(req,res)=>{
-    try{
-        
-        let community=await Community.find();
-        if(community){
-            res.status(200).json({status:true,community:community});
-        }else{
-            res.status(404).json({ status: false, message:"Something went wrong"})
+module.exports.getAllCommunity = async (req, res) => {
+    try {
+
+        let community = await Community.find();
+        if (community) {
+            res.status(200).json({ status: true, community: community });
+        } else {
+            res.status(404).json({ status: false, message: "Something went wrong" })
         }
-    }catch(err){
+    } catch (err) {
         res.status(500).json({ status: false, message: "Internal server error" });
     }
 }
 
 
-module.exports.joinCommunity=async(req,res)=>{
-    try{
-        if(req.body.userId){
-            let join = await Community.updateOne({ _id: req.body.communityId},{
-                $addToSet:{
-                    members:req.body.userId
+module.exports.joinCommunity = async (req, res) => {
+    try {
+        if (req.body.userId) {
+            //checking community exists or not
+            let community=await Community.updateOne({_id:req.body.communityId});
+            if(community){
+                //updating community array
+                let join = await Community.updateOne({ _id: req.body.communityId }, {
+                    $addToSet: {
+                        members: req.body.userId
+                    }
+                })
+                //updating user array 
+                let user = await User.updateOne({ _id: req.body.userId }, {
+                    $addToSet: {
+                        community: req.body.communityId
+                    }
+                })
+
+                if (join && user.acknowledged) {
+                    res.status(200).json({ status: true, message: "Joined successfully" })
+                } else {
+                    res.json({ status: false, message: "Something went wrong try again" })
                 }
-            })
-            if(join){
-                res.status(200).json({ status: true, message:"Joined successfully"})
             }else{
-                res.json({status:false,message:"Something went wrong try again"})
+                res.status(404).json({ status: false, message: "Community not Exist" })
             }
-        }else{
+        } else {
             res.status(404).json({ status: false, message: "User ID is not provided" });
         }
-    }catch(err){
+    } catch (err) {
         res.status(500).json({ status: false, message: "Internal server error" });
     }
 }

@@ -40,6 +40,12 @@ const userSchema = new mongoose.Schema({
     },
     image: {
         type: Object,
+    },
+    community:{
+        type: [mongoose.Schema.Types.ObjectId]
+    },
+    group:{
+        type: [mongoose.Schema.Types.ObjectId]
     }
 })
 
