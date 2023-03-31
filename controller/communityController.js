@@ -41,7 +41,6 @@ module.exports.createCommunity = async (req, res) => {
 
 module.exports.getAllCommunity = async (req, res) => {
     try {
-
         let community = await Community.find();
         if (community) {
             res.status(200).json({ status: true, community: community });
@@ -58,7 +57,7 @@ module.exports.joinCommunity = async (req, res) => {
     try {
         if (req.body.userId) {
             //checking community exists or not
-            let community=await Community.updateOne({_id:req.body.communityId});
+            let community=await Community.find({_id:req.body.communityId});
             if(community){
                 //updating community array
                 let join = await Community.updateOne({ _id: req.body.communityId }, {
@@ -85,6 +84,22 @@ module.exports.joinCommunity = async (req, res) => {
             res.status(404).json({ status: false, message: "User ID is not provided" });
         }
     } catch (err) {
+        console.log(err);
         res.status(500).json({ status: false, message: "Internal server error" });
+    }
+}
+
+module.exports.getJoinedCommunit=async(req,res)=>{
+    try{
+        console.log(req.userId);
+        if(req.userId){
+            let joinedCommunityList = await User.find().populate('community');
+            
+            res.status(200).json({status:true,joinedCommunity:joinedCommunityList[0].community})
+        }else{
+            throw new Error("User Id not provided")
+        }
+    }catch(err){
+        res.json({ status: false, message: err.message });
     }
 }
