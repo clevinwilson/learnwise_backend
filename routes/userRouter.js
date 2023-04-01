@@ -46,7 +46,7 @@ router.post('/create-community',verifyLogin, uploadCommuniyImage,createCommunity
 router.get('/community',getAllCommunity);
 router.put('/join-community',verifyLogin,joinCommunity);
 router.get('/joined-community',verifyLogin,getJoinedCommunit);
-router.get('/community-details/:communityId',getCommunityDetails)
+router.get('/community-details/:communityId',verifyLogin,getCommunityDetails)
 
 
 
