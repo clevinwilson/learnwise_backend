@@ -6,7 +6,6 @@ const bcrypt = require('bcrypt');
 const secret_key = process.env.SECRET_KEY;
 const axios = require('axios');
 const User = require('../models/userModel');
-const { response } = require('../app');
 
 
 
@@ -59,13 +58,12 @@ const doSignup = async (req, res, next) => {
 
 const doLogin = async (req, res, next) => {
     const { email, password } = req.body;
-    const user = await userModel.findOne({ email: email });
+    const user = await userModel.findOne({ email: email }, { password :0});
     if (user) {
         const validPassword = await bcrypt.compare(password, user.password);
         if (validPassword) {
             const token = createTocken(user._id);
 
-            user.password = "empty"
             res.status(200).json({ user, token, login: true });
         } else {
             res.json({ login: false, message: "Incorrect username or password" });
@@ -122,7 +120,7 @@ const userAuthentication=(req,res)=>{
             const token = authHeader.split(' ')[1];
             jwt.verify(token, secret_key, async (err, decoded) => {
                 // console.log(decoded.iat);
-                console.log(decoded);
+                // console.log(decoded);
 
                 if (err) {
                     res.json({ status: false, message: "Unauthorized" });
@@ -130,7 +128,6 @@ const userAuthentication=(req,res)=>{
                     const user =await userModel.findOne({ _id: decoded.id });
                     if (user) {
                         res.status(200).json({ status: true,user, message: "Authorized" });
-
                     } else {
                         res.json({ status: false, message: "User not exists" })
                     }

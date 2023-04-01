@@ -41,7 +41,7 @@ module.exports.createCommunity = async (req, res) => {
 
 module.exports.getAllCommunity = async (req, res) => {
     try {
-        let community = await Community.find();
+        let community = await Community.find({}, { posts: 0, groups :0});
         if (community) {
             res.status(200).json({ status: true, community: community });
         } else {
@@ -91,13 +91,26 @@ module.exports.joinCommunity = async (req, res) => {
 
 module.exports.getJoinedCommunit=async(req,res)=>{
     try{
-        console.log(req.userId);
         if(req.userId){
-            let joinedCommunityList = await User.find().populate('community');
+            let joinedCommunityList = await User.find({}, { posts: 0, groups: 0 }).populate('community');
             
             res.status(200).json({status:true,joinedCommunity:joinedCommunityList[0].community})
         }else{
             throw new Error("User Id not provided")
+        }
+    }catch(err){
+        res.json({ status: false, message: err.message });
+    }
+}
+
+module.exports.getCommunityDetails=async(req,res)=>{
+    try{
+        let communityDetails = await Community.findById({ _id: req.params.communityId }, { posts :0});
+        
+        if(communityDetails){
+            res.status(200).json({status:true,communityDetails})
+        }else{
+            throw new Error("Community not Exist")
         }
     }catch(err){
         res.json({ status: false, message: err.message });
