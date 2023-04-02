@@ -29,7 +29,15 @@ module.exports.createCommunity = async (req, res) => {
         })
         newCommunity.members.push(req.userId);
         let community = await newCommunity.save()
-        if (community) {
+
+        // //updating user array
+        let user = await User.updateOne({ _id: req.userId }, {
+            $addToSet: {
+                community: community._id
+            }
+        })
+
+        if (community && user) {
             res.status(200).json({ status: true, message: "Community Created Successfully" })
         } else {
             res.json({ status: false, message: "Community Not Created " })
@@ -93,7 +101,7 @@ module.exports.joinCommunity = async (req, res) => {
 module.exports.getJoinedCommunit = async (req, res) => {
     try {
         if (req.userId) {
-            let joinedCommunityList = await User.find({}, { posts: 0, groups: 0 }).populate('community');
+            let joinedCommunityList = await User.find({_id:req.userId}, { posts: 0, groups: 0 }).populate('community');
 
             res.status(200).json({ status: true, joinedCommunity: joinedCommunityList[0].community })
         } else {
