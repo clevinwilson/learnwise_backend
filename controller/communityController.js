@@ -186,3 +186,21 @@ module.exports.getCommunityFeeds = async (req, res) => {
         res.json({ status: false, message: err.message });
     }
 }
+
+module.exports.getCommunityMembers=async(req,res)=>{
+    try {
+        if (req.params.communityId) {
+            let members = await Community.findOne({ _id: req.params.communityId }, { _id: 1, admin: 1, members: 1 }).populate("admin", '-password').populate("members", '-password');
+            console.log(members);
+            if (members){
+                res.status(200).json({ status: true, community: members })
+            }else{
+                throw new Error("Community not exist")
+            }
+        } else {
+            throw new Error("CommunityId is not provided")
+        }
+    } catch (err) {
+        res.json({ status: false, message: err.message });
+    }
+}

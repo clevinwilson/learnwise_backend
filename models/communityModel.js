@@ -16,6 +16,7 @@ const CommunitySchema = new mongoose.Schema({
     },
     admin:{
         type:mongoose.Schema.Types.ObjectId,
+        ref: 'Users', 
         required:true
     },
     description: {
@@ -23,6 +24,7 @@ const CommunitySchema = new mongoose.Schema({
     },
     members:{
         type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Users', 
     },
     groups: {
         type: [],
