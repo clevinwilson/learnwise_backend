@@ -42,7 +42,7 @@ module.exports.createCommunity = async (req, res) => {
 
 module.exports.getAllCommunity = async (req, res) => {
     try {
-        let community = await Community.find({}, { posts: 0, groups :0});
+        let community = await Community.find({}, { posts: 0, groups: 0 });
         if (community) {
             res.status(200).json({ status: true, community: community });
         } else {
@@ -58,8 +58,8 @@ module.exports.joinCommunity = async (req, res) => {
     try {
         if (req.body.userId) {
             //checking community exists or not
-            let community=await Community.find({_id:req.body.communityId});
-            if(community){
+            let community = await Community.find({ _id: req.body.communityId });
+            if (community) {
                 //updating community array
                 let join = await Community.updateOne({ _id: req.body.communityId }, {
                     $addToSet: {
@@ -78,7 +78,7 @@ module.exports.joinCommunity = async (req, res) => {
                 } else {
                     res.json({ status: false, message: "Something went wrong try again" })
                 }
-            }else{
+            } else {
                 res.status(404).json({ status: false, message: "Community not Exist" })
             }
         } else {
@@ -90,63 +90,88 @@ module.exports.joinCommunity = async (req, res) => {
     }
 }
 
-module.exports.getJoinedCommunit=async(req,res)=>{
-    try{
-        if(req.userId){
+module.exports.getJoinedCommunit = async (req, res) => {
+    try {
+        if (req.userId) {
             let joinedCommunityList = await User.find({}, { posts: 0, groups: 0 }).populate('community');
-            
-            res.status(200).json({status:true,joinedCommunity:joinedCommunityList[0].community})
-        }else{
+
+            res.status(200).json({ status: true, joinedCommunity: joinedCommunityList[0].community })
+        } else {
             throw new Error("User Id not provided")
         }
-    }catch(err){
+    } catch (err) {
         res.json({ status: false, message: err.message });
     }
 }
 
 //get community detalils feeds(posts) not included
-module.exports.getCommunityDetails=async(req,res)=>{
-    try{
-        let communityDetails = await Community.findById({ _id: req.params.communityId }, { posts :0});
-        
-        if(communityDetails){
-            res.status(200).json({status:true,communityDetails})
-        }else{
+module.exports.getCommunityDetails = async (req, res) => {
+    try {
+        let communityDetails = await Community.findById({ _id: req.params.communityId }, { posts: 0 });
+
+        if (communityDetails) {
+            res.status(200).json({ status: true, communityDetails })
+        } else {
             throw new Error("Community not Exist")
         }
-    }catch(err){
+    } catch (err) {
         res.json({ status: false, message: err.message });
     }
 }
 
 //create community post
-module.exports.createCommunityPost=async(req,res)=>{
-    try{
+module.exports.createCommunityPost = async (req, res) => {
+    try {
+
         let post = {
             user: req.userId,
             message: req.body.message,
         }
         if (req.files.image) {
             post.image = req.files.image[0]
+            req.files.image[0].path = req.files.image[0].path.replace('public\\', "");
+
         }
 
         //checking user is the admin of community
-        let community = await Community.findById({ _id: req.body.communityId, admin:req.userId })
-        if(community){
+        let community = await Community.findById({ _id: req.body.communityId, admin: req.userId })
+        if (community) {
             let createPost = await Community.updateOne({ _id: req.body.communityId }, {
                 $push: {
                     posts: post
                 }
             })
             if (createPost) {
-                res.status(200).json({ status: 200, message:"Post Created Successfully"})
-            }else{
+                res.status(200).json({ status: true, message: "Post Created Successfully" })
+            } else {
                 throw new Error("Something went wrong")
             }
-        }else{
+        } else {
             throw new Error("Not permitted")
         }
-    }catch(err){
+    } catch (err) {
+        res.json({ status: false, message: err.message });
+    }
+}
+
+
+module.exports.getCommunityFeeds = async (req, res) => {
+    try {
+        if (req.params.communityId) {
+            let community = await Community.findOne({ _id: req.params.communityId }, { _id: 1, name: 1, posts: 1 }).populate({
+                path: 'posts',
+                populate: { path: 'user', select: 'firstName picture' }
+            });
+
+            if (community) {
+                res.status(200).json({ status: true, community: community })
+            } else {
+                throw new Error("Community not exist")
+            }
+        } else {
+            throw new Error("CommunityId is not provided")
+        }
+    } catch (err) {
         res.json({ status: false, message: err.message });
     }
 }
