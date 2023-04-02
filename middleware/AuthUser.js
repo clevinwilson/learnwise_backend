@@ -9,7 +9,7 @@ const verifyLogin = (req, res, next) => {
             const token = authHeader.split(' ')[1];
             jwt.verify(token, secret_key, async (err, decoded) => {
                 // console.log(decoded.iat);
-                console.log(decoded);
+                // console.log(decoded);
 
                 if (err) {
                     res.json({ status: false, message: "Unauthorized" });

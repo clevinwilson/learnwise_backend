@@ -115,10 +115,13 @@ module.exports.getJoinedCommunit = async (req, res) => {
 //get community detalils feeds(posts) not included
 module.exports.getCommunityDetails = async (req, res) => {
     try {
+        let admin=false;
         let communityDetails = await Community.findById({ _id: req.params.communityId }, { posts: 0 });
-
         if (communityDetails) {
-            res.status(200).json({ status: true, communityDetails })
+            //checking user is admin or not
+            if (req.userId.equals(communityDetails.admin))  admin = true;
+            
+            res.status(200).json({ status: true, communityDetails,admin })
         } else {
             throw new Error("Community not Exist")
         }
