@@ -1,3 +1,4 @@
+const { response } = require('../app');
 const Community = require('../models/communityModel');
 const User = require('../models/userModel');
 
@@ -103,6 +104,7 @@ module.exports.getJoinedCommunit=async(req,res)=>{
     }
 }
 
+//get community detalils feeds(posts) not included
 module.exports.getCommunityDetails=async(req,res)=>{
     try{
         let communityDetails = await Community.findById({ _id: req.params.communityId }, { posts :0});
@@ -111,6 +113,38 @@ module.exports.getCommunityDetails=async(req,res)=>{
             res.status(200).json({status:true,communityDetails})
         }else{
             throw new Error("Community not Exist")
+        }
+    }catch(err){
+        res.json({ status: false, message: err.message });
+    }
+}
+
+//create community post
+module.exports.createCommunityPost=async(req,res)=>{
+    try{
+        let post = {
+            user: req.userId,
+            message: req.body.message,
+        }
+        if (req.files.image) {
+            post.image = req.files.image[0]
+        }
+
+        //checking user is the admin of community
+        let community = await Community.findById({ _id: req.body.communityId, admin:req.userId })
+        if(community){
+            let createPost = await Community.updateOne({ _id: req.body.communityId }, {
+                $push: {
+                    posts: post
+                }
+            })
+            if (createPost) {
+                res.status(200).json({ status: 200, message:"Post Created Successfully"})
+            }else{
+                throw new Error("Something went wrong")
+            }
+        }else{
+            throw new Error("Not permitted")
         }
     }catch(err){
         res.json({ status: false, message: err.message });

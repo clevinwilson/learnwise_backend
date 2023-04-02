@@ -43,6 +43,16 @@ const communityStorage = multer.diskStorage({
 const uploadCommuniyImage = multer({ storage: communityStorage }).fields([{ name: 'image', maxCount: 1 }]);
 
 
+//community post images
+const postStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "./public/images/post");
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname)
+    }
+})
+const postImage = multer({ storage: postStorage }).fields([{ name: 'image', maxCount: 1 }]);
 
 
-module.exports = { uploadCourseImage, uploadCommuniyImage };
+module.exports = { uploadCourseImage, uploadCommuniyImage, postImage };

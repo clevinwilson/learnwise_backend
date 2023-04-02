@@ -28,7 +28,15 @@ const CommunitySchema = new mongoose.Schema({
         type: [],
     },
     posts:{
-        type: [],
+        type: [
+            {
+                user:mongoose.Schema.Types.ObjectId,
+                createdAt: { type: Date, default: Date.now },
+                message:{type:String},
+                image:{type:Object,default:{}}
+
+            }
+        ],
     },
     image:{
         type:Object,
