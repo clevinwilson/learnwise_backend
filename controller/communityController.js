@@ -204,3 +204,40 @@ module.exports.getCommunityMembers=async(req,res)=>{
         res.json({ status: false, message: err.message });
     }
 }
+
+module.exports.editCommunity=async(req,res)=>{
+    try{
+        let image={};
+        let community = await Community.findOne({ _id: req.body.communityId });
+        if(community){
+            //seting image
+            if (req.files.image){
+                image=req.files.image[0];
+                req.files.image[0].path = req.files.image[0].path.replace('public\\', "");
+
+            }else{
+                image=community.image;
+            }
+
+            Community.updateOne({ _id: req.body.communityId }, {
+                $set: {
+                    name: req.body.name,
+                    type: req.body.type,
+                    about: req.body.about,
+                    description: req.body.description,
+                    image
+                }
+            }).then((response)=>{
+                res.status(200).json({ status: true, message: "Updated Successfully" })
+            })
+            .catch((err)=>{
+                throw new Error("Community Details not Updated ")
+            })
+        }else{
+            
+            throw new Error("Community Not exist")
+        }
+    }catch(err){
+        res.status(404).json({ status: false, message: err.message });
+    }
+}
