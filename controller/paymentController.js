@@ -90,13 +90,17 @@ const cancelOrder=(req,res)=>{
         orderSchema.findByIdAndDelete({ _id: req.params.orderId }).then((response)=>{
             console.log(response);
             if(response){
-                res.redirect(`${process.env.CLIENT_URL}/course-payment/${response.courseId}`);
+                res.redirect(`${process.env.CLIENT_URL}/order-failed`);
+
+                // res.redirect(`${process.env.CLIENT_URL}/course-payment/${response.course}`);
             }else{
-                res.redirect(`${process.env.CLIENT_URL}/course-payment/${response.courseId}`);
+                res.redirect(`${process.env.CLIENT_URL}/order-failed`);
+
+                // res.redirect(`${process.env.CLIENT_URL}/course-payment/${response.course}`);
             }
         })
     }catch(err){
-        res.redirect(`${process.env.CLIENT_URL}/course-payment/${response.courseId}`);
+        res.redirect(`${process.env.CLIENT_URL}/course-payment/${response.course}`);
     }
 }
 
