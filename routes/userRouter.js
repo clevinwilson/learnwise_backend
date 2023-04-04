@@ -7,7 +7,7 @@ const { getTopCourse, getCourseDetails, getAllCourses, getEnrolledCourse, isCour
 const { doPayment, verifyPayment, cancelOrder } = require('../controller/paymentController');
 const { verifyLogin } = require('../middleware/AuthUser');
 const { uploadCommuniyImage, postImage, uploadGroupImage } = require('../middleware/image-upload');
-const { createGroup } = require('../controller/groupController');
+const { createGroup, getCommunityGroups } = require('../controller/groupController');
 
 
 
@@ -54,7 +54,8 @@ router.get('/community/members/:communityId',verifyLogin,getCommunityMembers);
 router.post('/edit-community', verifyLogin, uploadCommuniyImage,editCommunity);
 
 //group
-router.post('/create-group', verifyLogin, uploadGroupImage,createGroup)
+router.post('/create-group', verifyLogin, uploadGroupImage,createGroup);
+router.get('/community/groups/:communityId',verifyLogin,getCommunityGroups)
 
 
 
