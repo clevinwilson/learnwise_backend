@@ -27,7 +27,8 @@ const CommunitySchema = new mongoose.Schema({
         ref: 'Users', 
     },
     groups: {
-        type: [],
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Groups', 
     },
     posts:{
         type: [

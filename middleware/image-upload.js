@@ -55,4 +55,16 @@ const postStorage = multer.diskStorage({
 const postImage = multer({ storage: postStorage }).fields([{ name: 'image', maxCount: 1 }]);
 
 
-module.exports = { uploadCourseImage, uploadCommuniyImage, postImage };
+//uploat group images
+const groupStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "./public/images/group");
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname)
+    }
+})
+const uploadGroupImage = multer({ storage: groupStorage }).fields([{ name: 'image', maxCount: 1 }]);
+
+
+module.exports = { uploadCourseImage, uploadCommuniyImage, postImage, uploadGroupImage };
