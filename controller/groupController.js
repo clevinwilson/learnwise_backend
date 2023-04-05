@@ -49,6 +49,8 @@ module.exports.createGroup = async (req, res) => {
     }
 }
 
+
+//get all groups under a community 
 module.exports.getCommunityGroups=async(req,res)=>{
     try{
        if(req.params.communityId){
@@ -62,6 +64,37 @@ module.exports.getCommunityGroups=async(req,res)=>{
         throw new Error("Community Id not provided")
        }
     } catch (err) {
+        res.status(404).json({ status: false, message: err.message });
+    }
+};
+
+
+//join a community
+module.exports.joinGroup=async(req,res)=>{
+    try{
+        //checking user joinde the community
+        let checkUserJoined = await Community.findOne({ _id: req.params.communityId, members: { $in: [req.userId] } });
+        if (checkUserJoined) {
+            console.log(req.params.groupId);
+            //adding the user to group
+           let group=await Group.updateOne({ _id: req.params.groupId }, {
+                $addToSet: { members: req.userId }
+            })
+
+            //updating in user collection
+            let user = await User.updateOne({ _id: req.userId }, {
+                $addToSet: { group: req.params.groupId}
+            })
+            
+            if(group && user){
+                res.status(200).json({ status: true, message: "Joined Successfully" })
+            }else{
+                throw new Error("Something went wrong")
+            }
+        }else{
+            throw new Error("Join the Community")
+        }
+    }catch(err){
         res.status(404).json({ status: false, message: err.message });
     }
 }

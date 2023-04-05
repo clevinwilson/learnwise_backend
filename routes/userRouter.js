@@ -1,5 +1,4 @@
 const express = require('express');
-const { routes } = require('../app');
 const router = express.Router();
 const { generateOtp, doSignup, doLogin, googleAuth, userAuthentication } =require('../controller/authController');
 const { createCommunity, getAllCommunity, joinCommunity, getJoinedCommunit, getCommunityDetails, createCommunityPost, getCommunityFeeds, getCommunityMembers, editCommunity } = require('../controller/communityController');
@@ -7,7 +6,7 @@ const { getTopCourse, getCourseDetails, getAllCourses, getEnrolledCourse, isCour
 const { doPayment, verifyPayment, cancelOrder } = require('../controller/paymentController');
 const { verifyLogin } = require('../middleware/AuthUser');
 const { uploadCommuniyImage, postImage, uploadGroupImage } = require('../middleware/image-upload');
-const { createGroup, getCommunityGroups } = require('../controller/groupController');
+const { createGroup, getCommunityGroups, joinGroup } = require('../controller/groupController');
 
 
 
@@ -55,7 +54,8 @@ router.post('/edit-community', verifyLogin, uploadCommuniyImage,editCommunity);
 
 //group
 router.post('/create-group', verifyLogin, uploadGroupImage,createGroup);
-router.get('/community/groups/:communityId',verifyLogin,getCommunityGroups)
+router.get('/community/groups/:communityId',verifyLogin,getCommunityGroups);
+router.get('/community/groups/join/:communityId/:groupId',verifyLogin,joinGroup)
 
 
 
