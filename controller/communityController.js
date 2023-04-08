@@ -295,3 +295,25 @@ module.exports.leaveFromCommunity = async (req, res) => {
         res.status(404).json({ status: false, message: err.message });
     }
 }
+
+
+//delete community
+module.exports.deleteCommunity=async(req,res)=>{
+    try{
+        let community = await Community.findOne({admin:req.userId, _id: req.params.communityId });
+        if(community){
+            //deleting all groups under this community
+            community.groups.forEach(async(groupId)=>{
+               await Group.deleteOne({_id:groupId})
+            })
+
+            //deleting community
+            Community.deleteOne({ admin: req.userId, _id: req.params.communityId }).then((response) => {
+                res.status(200).json({ status: true, message:"Community deleted Successfully"})
+            })
+
+        }
+    }catch(err){
+        res.status(404).json({ status: false, message: err.message });
+    }
+}
