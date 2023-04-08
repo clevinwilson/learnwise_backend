@@ -9,7 +9,8 @@ const teacherModel = require('../models/teacherModel');
 const User = require('../models/userModel');
 const Course = require('../models/courseModel');
 const Community=require('../models/communityModel');
-const Group =require('../models/groupModel')
+const Group =require('../models/groupModel');
+const { response } = require('express');
 
 
 const createTocken = (id) => {
@@ -243,6 +244,29 @@ const getAllCommunity=async(req,res)=>{
     }
 }
 
+const changeCommunityStatus=async(req,res)=>{
+    try {
+        switch(req.params.status){
+            case 'block':
+                Community.updateOne({_id:req.params.id},{$set:{status:false}})
+                .then((response)=>{
+                    res.status(200).json({ status: true, message: "Community Blocked Successfully" });
+                })
+
+                break;
+            case 'unblock':
+                Community.updateOne({ _id: req.params.id }, { $set: { status: true } }).then((response)=>{
+                    res.status(200).json({ status: true, message: "Community Unblocked Successfully" })
+                })
+                break;
+            default:
+                res.status(200).json({ status: true, message: "Invalid" })
+        }
+    } catch (err) {
+        res.status(404).json({ status: false, message: err.message });
+    }
+}
+
 
 //get all groups details
 const getAllGroups=async(req,res)=>{
@@ -256,4 +280,4 @@ const getAllGroups=async(req,res)=>{
     }
 }
 
-module.exports = { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher, getAllUsers, blockUser, unBlockUser, unBlockTeacher, getAllCourse, getAllCommunity, getAllGroups }
+module.exports = { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher, getAllUsers, blockUser, unBlockUser, unBlockTeacher, getAllCourse, getAllCommunity, getAllGroups, changeCommunityStatus }

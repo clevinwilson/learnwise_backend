@@ -50,7 +50,13 @@ const CourseSchema = new mongoose.Schema({
     image:{
         type: Object,
         required: true
-    }
+    },
+    status:{
+        type:Boolean,
+        default:true,
+        required:true,
+    },
+    createdAt: { type: Date, default: Date.now },
 })
 
 

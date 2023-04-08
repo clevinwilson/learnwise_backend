@@ -18,6 +18,12 @@ const GroupSchema = new mongoose.Schema({
         type: String,
         required:true
     },
+    status: {
+        type: Boolean,
+        default: true,
+        required: true,
+    },
+    createdAt: { type: Date, default: Date.now },
 })
 
 
