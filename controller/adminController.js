@@ -6,9 +6,11 @@ const secret_key = process.env.SECRET_KEY;
 const teacherSchema = require('../models/teacherModel');
 const { sendEmail } = require('../helpers/sendEmail');
 const teacherModel = require('../models/teacherModel');
-const userModel = require('../models/userModel');
+const User = require('../models/userModel');
 const Course = require('../models/courseModel');
 const Community=require('../models/communityModel');
+const Group =require('../models/groupModel')
+
 
 const createTocken = (id) => {
     return jwt.sign({ id }, secret_key, {
@@ -138,7 +140,7 @@ const blockTeacher = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
     try {
-        const users = await userModel.find()
+        const users = await User.find()
         if (users) {
             res.status(200).json({ status: true, users })
         } else {
@@ -152,9 +154,9 @@ const getAllUsers = async (req, res) => {
 
 const blockUser=async(req,res)=>{
     try {
-        const user = await userModel.findOne({ _id: req.params.userId });
+        const user = await User.findOne({ _id: req.params.userId });
         if (user) {
-            userModel.updateOne({ _id: req.params.userId }, {
+            User.updateOne({ _id: req.params.userId }, {
                 $set: {
                     status: false
                 }
@@ -176,9 +178,9 @@ const blockUser=async(req,res)=>{
 const unBlockUser=async(req,res)=>{
 
     try {
-        const user = await userModel.findOne({ _id: req.params.userId });
+        const user = await User.findOne({ _id: req.params.userId });
         if (user) {
-            userModel.updateOne({ _id: req.params.userId }, {
+            User.updateOne({ _id: req.params.userId }, {
                 $set: {
                     status: true
                 }
@@ -241,4 +243,17 @@ const getAllCommunity=async(req,res)=>{
     }
 }
 
-module.exports = { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher, getAllUsers, blockUser, unBlockUser, unBlockTeacher, getAllCourse, getAllCommunity }
+
+//get all groups details
+const getAllGroups=async(req,res)=>{
+    try {
+        const group = await Group.find();
+        if (group) {
+            res.status(200).json({ status: true, group })
+        }
+    } catch (err) {
+        res.status(404).json({ status: false, message: err.message });
+    }
+}
+
+module.exports = { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher, getAllUsers, blockUser, unBlockUser, unBlockTeacher, getAllCourse, getAllCommunity, getAllGroups }
