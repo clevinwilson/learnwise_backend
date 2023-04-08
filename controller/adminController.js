@@ -6,7 +6,8 @@ const secret_key = process.env.SECRET_KEY;
 const teacherSchema = require('../models/teacherModel');
 const { sendEmail } = require('../helpers/sendEmail');
 const teacherModel = require('../models/teacherModel');
-const userModel = require('../models/userModel')
+const userModel = require('../models/userModel');
+const Course = require('../models/courseModel');
 
 const createTocken = (id) => {
     return jwt.sign({ id }, secret_key, {
@@ -214,4 +215,16 @@ const unBlockTeacher=async(req,res)=>{
     }
 }
 
-module.exports = { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher, getAllUsers, blockUser, unBlockUser, unBlockTeacher }
+//get all course list 
+const getAllCourse=async(req,res)=>{
+    try{
+        const course = await Course.find().populate({ path: "teacher", select:"firstName"});
+        if(course){
+            res.status(200).json({status:true,course})
+        }
+    }catch(err){
+        res.status(404).json({ status: false, message: err.message });
+    }
+}
+
+module.exports = { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher, getAllUsers, blockUser, unBlockUser, unBlockTeacher, getAllCourse }
