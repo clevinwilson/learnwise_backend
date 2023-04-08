@@ -8,6 +8,7 @@ const { sendEmail } = require('../helpers/sendEmail');
 const teacherModel = require('../models/teacherModel');
 const userModel = require('../models/userModel');
 const Course = require('../models/courseModel');
+const Community=require('../models/communityModel');
 
 const createTocken = (id) => {
     return jwt.sign({ id }, secret_key, {
@@ -227,4 +228,17 @@ const getAllCourse=async(req,res)=>{
     }
 }
 
-module.exports = { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher, getAllUsers, blockUser, unBlockUser, unBlockTeacher, getAllCourse }
+
+//get all community list
+const getAllCommunity=async(req,res)=>{
+    try{
+        const community = await Community.find();
+        if (community) {
+            res.status(200).json({ status: true, community })
+        }
+    }catch(err){
+        res.status(404).json({ status: false, message: err.message });
+    }
+}
+
+module.exports = { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher, getAllUsers, blockUser, unBlockUser, unBlockTeacher, getAllCourse, getAllCommunity }
