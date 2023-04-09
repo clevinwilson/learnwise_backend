@@ -65,8 +65,34 @@ const teacherAuth=(req,res)=>{
 }
 
 
+const changePassword=async(req,res)=>{
+    try{
+        let teacher=await teacherModel.findOne({_id:res.teacherId});
+        if(teacher){
+            const validPassword = await bcrypt.compare(req.body.oldpassword, teacher.password);
+           if(validPassword){
+               const newPassword = await bcrypt.hash(req.body.password, 10);
+               teacherModel.updateOne({ _id: res.teacherId }, {
+                   $set: {
+                       password: newPassword
+                   }
+               }).then(()=>{
+                   res.status(200).json({ status: true, message: "Password updated successfully" });
+               })
+           }else{
+               throw new Error("Incorrect old password. please retry")
+           }
+        }else{
+            throw new Error("Teacher Not exist")
+        }
+    }catch(err){
+        res.json({ status: false, message: err.message });
+    }
+}
 
 
 
 
-module.exports = { doLogin, teacherAuth }
+
+
+module.exports = { doLogin, teacherAuth, changePassword }

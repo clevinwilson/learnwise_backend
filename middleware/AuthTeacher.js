@@ -15,7 +15,6 @@ const verifyTeacherLogin = (req, res, next) => {
                 if (err) {
                     res.json({ status: false, message: "Permission not allowed" });
                 } else {
-                    
                     const teacher =await teacherModel.findOne({ _id:decoded.id})
                     if (teacher) {
                         res.teacherId = decoded.id
