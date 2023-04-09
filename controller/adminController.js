@@ -232,6 +232,34 @@ const getAllCourse=async(req,res)=>{
 }
 
 
+const changeCourseStatus=async(req,res)=>{
+    try{
+        try {
+            switch (req.params.status) {
+                case 'block':
+                    Course.updateOne({ _id: req.params.courseId }, { $set: { status: false } })
+                        .then((response) => {
+                            res.status(200).json({ status: true, message: "Course Blocked Successfully" });
+                        })
+
+                    break;
+                case 'unblock':
+                    Course.updateOne({ _id: req.params.courseId }, { $set: { status: true } }).then((response) => {
+                        res.status(200).json({ status: true, message: "Course Unblocked Successfully" })
+                    })
+                    break;
+                default:
+                    res.status(200).json({ status: true, message: "Invalid" })
+            }
+        } catch (err) {
+            res.status(404).json({ status: false, message: err.message });
+        }
+    } catch (err) {
+        res.status(404).json({ status: false, message: err.message });
+    }
+}
+
+
 //get all community list
 const getAllCommunity=async(req,res)=>{
     try{
@@ -280,4 +308,4 @@ const getAllGroups=async(req,res)=>{
     }
 }
 
-module.exports = { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher, getAllUsers, blockUser, unBlockUser, unBlockTeacher, getAllCourse, getAllCommunity, getAllGroups, changeCommunityStatus }
+module.exports = { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher, getAllUsers, blockUser, unBlockUser, unBlockTeacher, getAllCourse, getAllCommunity, getAllGroups, changeCommunityStatus, changeCourseStatus }

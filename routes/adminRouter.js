@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher, getAllUsers, blockUser, unBlockUser, unBlockTeacher, getAllCourse, getAllCommunity, getAllGroups, changeCommunityStatus } =require('../controller/adminController');
+const { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher, getAllUsers, blockUser, unBlockUser, unBlockTeacher, getAllCourse, getAllCommunity, getAllGroups, changeCommunityStatus, changeCourseStatus } =require('../controller/adminController');
 const {verifyAdminLogin} = require('../middleware/AuthAdmin');
 
 
@@ -22,6 +22,7 @@ router.get('/unblock-teacher/:teacherId', verifyAdminLogin, unBlockTeacher);
 
 //course
 router.get('/course',verifyAdminLogin,getAllCourse);
+router.get('/course/change-status/:courseId/:status',verifyAdminLogin,changeCourseStatus)
 
 //community
 router.get('/community',verifyAdminLogin,getAllCommunity);
