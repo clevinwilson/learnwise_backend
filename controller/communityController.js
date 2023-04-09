@@ -51,7 +51,7 @@ module.exports.createCommunity = async (req, res) => {
 
 module.exports.getAllCommunity = async (req, res) => {
     try {
-        let community = await Community.find({}, { posts: 0, groups: 0 });
+        let community = await Community.find({ status: true }, { posts: 0, groups: 0 });
         if (community) {
             res.status(200).json({ status: true, community: community });
         } else {
@@ -117,7 +117,7 @@ module.exports.getJoinedCommunit = async (req, res) => {
 module.exports.getCommunityDetails = async (req, res) => {
     try {
         let admin = false;
-        let communityDetails = await Community.findById({ _id: req.params.communityId }, { posts: 0 }).populate('groups')
+        let communityDetails = await Community.findById({ _id: req.params.communityId, status: true }, { posts: 0 }).populate('groups')
         if (communityDetails) {
             //checking user is admin or not
             if (req.userId.equals(communityDetails.admin)) admin = true;

@@ -54,7 +54,7 @@ module.exports.createGroup = async (req, res) => {
 module.exports.getCommunityGroups=async(req,res)=>{
     try{
        if(req.params.communityId){
-           let community = await Community.findOne({ _id: req.params.communityId }, { project: 1, groups: 1 }).populate('groups')
+           let community = await Community.findOne({ _id: req.params.communityId, status: true }, { project: 1, groups: 1 }).populate('groups')
            if (community) {
                res.status(200).json({ status: true, community })
            } else {

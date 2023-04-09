@@ -70,7 +70,7 @@ const deleteCourse = async (req, res) => {
 const getTopCourse = async (req, res) => {
     try {
 
-        let course = await courseModel.find().populate('teacher').lean();
+        let course = await courseModel.find({ status: true }).populate('teacher').lean();
 
         if (course) {
             res.status(200).json({ status: true, courses: course })
@@ -100,7 +100,7 @@ const getCourseDetails = async (req, res) => {
 
 const getAllCourses=async(req,res)=>{
     try {
-        courseModel.find().populate('teacher').lean().then((response) => {
+        courseModel.find({ status: true }).populate('teacher').lean().then((response) => {
             res.status(200).json({ status: true, course: response });
 
         }).catch((err) => {
