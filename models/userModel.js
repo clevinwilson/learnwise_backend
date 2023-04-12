@@ -46,7 +46,8 @@ const userSchema = new mongoose.Schema({
         ref: 'Communitys',
     },
     group:{
-        type: [mongoose.Schema.Types.ObjectId]
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Groups',
     }
 })
 

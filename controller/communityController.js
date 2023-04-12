@@ -174,6 +174,7 @@ module.exports.getCommunityFeeds = async (req, res) => {
                 path: 'posts',
                 populate: { path: 'user', select: 'firstName picture' }
             });
+            community.posts=community.posts.reverse();
 
             if (community) {
                 res.status(200).json({ status: true, community: community })

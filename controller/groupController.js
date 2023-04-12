@@ -98,3 +98,18 @@ module.exports.joinGroup=async(req,res)=>{
         res.status(404).json({ status: false, message: err.message });
     }
 }
+
+//list all groups that user joined
+module.exports.getJoinedGroups=async(req,res)=>{
+    try{
+        if(req.userId){
+            let user = await User.find({ _id: req.userId }).populate('group');
+            console.log(user[0].group);
+            res.status(200).json({status:true,groups:user[0].group})
+        }else{
+            throw new Error("User Id is not Provided")
+        }
+    } catch (err) {
+        res.status(404).json({ status: false, message: err.message });
+    }
+}
