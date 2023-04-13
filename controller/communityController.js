@@ -26,7 +26,8 @@ module.exports.createCommunity = async (req, res) => {
             type: req.body.type,
             about: req.body.about,
             admin: req.userId,
-            image: req.files.image[0]
+            image: req.files.image[0],
+            description: req.body.description
         })
         newCommunity.members.push(req.userId);
         let community = await newCommunity.save()

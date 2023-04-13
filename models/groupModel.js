@@ -23,6 +23,14 @@ const GroupSchema = new mongoose.Schema({
         default: true,
         required: true,
     },
+    community:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Communitys',  
+    },
+    admin: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Users',
+    },
     createdAt: { type: Date, default: Date.now },
 })
 

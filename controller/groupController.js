@@ -19,7 +19,10 @@ module.exports.createGroup = async (req, res) => {
         let newGroup = new Group({
             name: req.body.name,
             image: req.files.image[0],
-            description: req.body.description
+            description: req.body.description,
+            members:[req.userId],
+            community: req.body.communityId,
+            admin:req.userId
         })
         let group = await newGroup.save()
 
@@ -108,6 +111,18 @@ module.exports.getJoinedGroups=async(req,res)=>{
             res.status(200).json({status:true,groups:user[0].group})
         }else{
             throw new Error("User Id is not Provided")
+        }
+    } catch (err) {
+        res.status(404).json({ status: false, message: err.message });
+    }
+}
+
+//list all groups in all community
+module.exports.getAllGroups = async (req, res) => {
+    try {
+        const group = await Group.find();
+        if (group) {
+            res.status(200).json({ status: true, group })
         }
     } catch (err) {
         res.status(404).json({ status: false, message: err.message });
