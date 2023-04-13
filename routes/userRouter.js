@@ -7,6 +7,7 @@ const { doPayment, verifyPayment, cancelOrder } = require('../controller/payment
 const { verifyLogin } = require('../middleware/AuthUser');
 const { uploadCommuniyImage, postImage, uploadGroupImage } = require('../middleware/image-upload');
 const { createGroup, getCommunityGroups, joinGroup, getJoinedGroups, getAllGroups } = require('../controller/groupController');
+const { createMessage, getMessages } = require('../controller/messageController');
 
 
 
@@ -60,6 +61,10 @@ router.get('/community/groups/:communityId', verifyLogin, getCommunityGroups);
 router.get('/community/groups/join/:communityId/:groupId', verifyLogin, joinGroup);
 router.get('/community/group/joinedGroups/',verifyLogin,getJoinedGroups);
 router.get('/community/groups',verifyLogin,getAllGroups);
+
+//message
+router.post('/messages',verifyLogin,createMessage);
+router.get('/messages/:groupId',verifyLogin,getMessages)
 
 
 
