@@ -4,9 +4,10 @@
  * Module dependencies.
  */
 
-var app = require('../app');
+var {app} = require('../app');
 var debug = require('debug')('backend:server');
 var http = require('http');
+let socketapi =require('../socketapi')
 
 /**
  * Get port from environment and store in Express.
@@ -20,6 +21,13 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+
+//connection socket io
+socketapi.io.attach(server, {
+  cors: {
+    origin: process.env.CLIENT_URL
+  }
+});
 
 /**
  * Listen on provided port, on all network interfaces.

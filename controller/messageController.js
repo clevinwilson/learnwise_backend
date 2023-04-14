@@ -2,7 +2,6 @@ const Message = require('../models/messageModel');
 
 module.exports.createMessage=async(req,res)=>{
     try{
-        console.log(req.body);
         const {user,text,group}=req.body;
         const newMessage=new Message({
             group,
@@ -19,9 +18,7 @@ module.exports.createMessage=async(req,res)=>{
 
 module.exports.getMessages=async(req,res)=>{
     try{
-        const messages = await Message.find({
-            group: req.params.groupId,
-        });
+        const messages = await Message.find({group: req.params.groupId}).populate('sender');
         res.status(200).json(messages);
     } catch (err) {
         res.status(404).json({ status: false, message: err.message });

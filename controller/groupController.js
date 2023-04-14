@@ -27,7 +27,6 @@ module.exports.createGroup = async (req, res) => {
         let group = await newGroup.save()
 
         if (group) {
-            console.log(req.userId);
             //updating in user database
             let user = await User.updateOne({ _id: req.userId }, {
                 $addToSet: {
@@ -78,7 +77,6 @@ module.exports.joinGroup=async(req,res)=>{
         //checking user joinde the community
         let checkUserJoined = await Community.findOne({ _id: req.params.communityId, members: { $in: [req.userId] } });
         if (checkUserJoined) {
-            console.log(req.params.groupId);
             //adding the user to group
            let group=await Group.updateOne({ _id: req.params.groupId }, {
                 $addToSet: { members: req.userId }
@@ -107,7 +105,6 @@ module.exports.getJoinedGroups=async(req,res)=>{
     try{
         if(req.userId){
             let user = await User.find({ _id: req.userId }).populate('group');
-            console.log(user[0].group);
             res.status(200).json({status:true,groups:user[0].group})
         }else{
             throw new Error("User Id is not Provided")
