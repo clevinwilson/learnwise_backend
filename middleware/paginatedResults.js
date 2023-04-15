@@ -1,4 +1,8 @@
-const Teacher = require('../models/teacherModel')
+const Teacher = require('../models/teacherModel');
+const Course = require('../models/courseModel');
+const Group = require('../models/groupModel');
+const Community = require('../models/communityModel');
+
 
 
 function paginatedResults() {
@@ -15,13 +19,22 @@ function paginatedResults() {
             case 'teacher':
                 model = Teacher
                 break;
+            case 'course':
+                model = Course
+                break;
+            case 'group':
+                model=Group
+                break;
+            case 'community':
+                model= Community
+                break;
             default:
                 res.status(404).json({ status: false, message: "Not in proper syntax" });
         }
 
 
         if (model) {
-            const modelCount = await Teacher.find().count();
+            const modelCount = await model.find().count();
             results = {};
 
             //next page

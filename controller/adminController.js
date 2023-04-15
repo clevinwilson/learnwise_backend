@@ -224,7 +224,7 @@ const getAllCourse = async (req, res) => {
     try {
         const course = await Course.find().populate({ path: "teacher", select: "firstName" });
         if (course) {
-            res.status(200).json({ status: true, course })
+            res.status(200).json({ status: true, course, pagination: req.paginatedResults })
         }
     } catch (err) {
         res.status(404).json({ status: false, message: err.message });
@@ -261,7 +261,7 @@ const getAllCommunity = async (req, res) => {
     try {
         const community = await Community.find();
         if (community) {
-            res.status(200).json({ status: true, community })
+            res.status(200).json({ status: true, community, pagination: req.paginatedResults })
         }
     } catch (err) {
         res.status(404).json({ status: false, message: err.message });
@@ -297,7 +297,7 @@ const getAllGroups = async (req, res) => {
     try {
         const group = await Group.find();
         if (group) {
-            res.status(200).json({ status: true, group })
+            res.status(200).json({ status: true, group, pagination: req.paginatedResults })
         }
     } catch (err) {
         res.status(404).json({ status: false, message: err.message });
