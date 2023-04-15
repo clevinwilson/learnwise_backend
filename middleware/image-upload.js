@@ -66,5 +66,17 @@ const groupStorage = multer.diskStorage({
 })
 const uploadGroupImage = multer({ storage: groupStorage }).fields([{ name: 'image', maxCount: 1 }]);
 
+//upload user avatar
+//uploat group images
+const avatarStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "./public/images/user");
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname)
+    }
+})
+const uploadAvatarImage = multer({ storage: avatarStorage }).fields([{ name: 'image', maxCount: 1 }]);
 
-module.exports = { uploadCourseImage, uploadCommuniyImage, postImage, uploadGroupImage };
+
+module.exports = { uploadCourseImage, uploadCommuniyImage, postImage, uploadGroupImage, uploadAvatarImage };
