@@ -109,8 +109,8 @@ const authAdmin = (req, res, next) => {
 
 const getAllTeachers = (req, res) => {
     try {
-        teacherModel.find().then((response) => {
-            res.status(200).json({ status: true, teachers: response })
+        teacherModel.find({}, { password: 0 }).skip(req.paginatedResults.startIndex).limit(req.paginatedResults.endIndex).then((response) => {
+            res.status(200).json({ status: true, teachers: response,pagination:req.paginatedResults })
         })
     } catch (err) {
         res.status(500).json({ created: false, message: "Internal server error" })

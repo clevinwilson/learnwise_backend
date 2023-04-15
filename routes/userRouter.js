@@ -64,7 +64,10 @@ router.get('/community/groups',verifyLogin,getAllGroups);
 
 //message
 router.post('/messages',verifyLogin,createMessage);
-router.get('/messages/:groupId',verifyLogin,getMessages)
+router.get('/messages/:groupId',verifyLogin,getMessages);
+
+//pagination
+router.get('/listing')
 
 
 
