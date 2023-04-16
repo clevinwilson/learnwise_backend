@@ -1,16 +1,15 @@
-const adminModel = require('../models/adminModel')
+const Admin = require('../models/adminModel')
 const jwt = require('jsonwebtoken');
 const maxAge = 3 * 24 * 60 * 60;
 const bcrypt = require('bcrypt');
 const secret_key = process.env.SECRET_KEY;
-const teacherSchema = require('../models/teacherModel');
 const { sendEmail } = require('../helpers/sendEmail');
-const teacherModel = require('../models/teacherModel');
+const Teacher = require('../models/teacherModel');
 const User = require('../models/userModel');
 const Course = require('../models/courseModel');
 const Community = require('../models/communityModel');
 const Group = require('../models/groupModel');
-const { response } = require('express');
+const Order = require('../models/orderModel')
 
 
 const createTocken = (id) => {
@@ -23,7 +22,7 @@ const createTocken = (id) => {
 
 const doLogin = async (req, res, next) => {
     const { email, password } = req.body;
-    const admin = await adminModel.findOne({ email: email });
+    const admin = await Admin.findOne({ email: email });
     if (admin) {
         const validPassword = await bcrypt.compare(password, admin.password);
         if (validPassword) {
@@ -49,9 +48,9 @@ const addTeacher = async (req, res) => {
     const randomNum = Math.floor(Math.random() * 1000000);
     const password = randomNum.toString().padStart(6, '0');
 
-    const teacher = await teacherSchema.findOne({ email: email });
+    const teacher = await Teacher.findOne({ email: email });
     if (!teacher) {
-        const newTeacher = new teacherSchema({
+        const newTeacher = new Teacher({
             firstName: firstName,
             lastName: lastName,
             email: email,
@@ -92,7 +91,7 @@ const authAdmin = (req, res, next) => {
             if (err) {
                 res.json({ status: false, message: "Unauthorized" });
             } else {
-                const admin = adminModel.findById({ _id: decoded.id });
+                const admin = Admin.findById({ _id: decoded.id });
                 if (admin) {
                     res.json({ status: true, message: "Authorized" });
 
@@ -109,7 +108,7 @@ const authAdmin = (req, res, next) => {
 
 const getAllTeachers = (req, res) => {
     try {
-        teacherModel.find({}, { password: 0 }).skip(req.paginatedResults.startIndex).limit(req.paginatedResults.endIndex).then((response) => {
+        Teacher.find({}, { password: 0 }).skip(req.paginatedResults.startIndex).limit(req.paginatedResults.endIndex).then((response) => {
             res.status(200).json({ status: true, teachers: response,pagination:req.paginatedResults })
         })
     } catch (err) {
@@ -120,9 +119,9 @@ const getAllTeachers = (req, res) => {
 
 const blockTeacher = async (req, res) => {
     try {
-        const teacher = await teacherModel.findOne({ _id: req.params.teacherId });
+        const teacher = await Teacher.findOne({ _id: req.params.teacherId });
         if (teacher) {
-            teacherModel.updateOne({ _id: req.params.teacherId }, {
+            Teacher.updateOne({ _id: req.params.teacherId }, {
                 $set: {
                     status: false
                 }
@@ -200,9 +199,9 @@ const unBlockUser = async (req, res) => {
 
 const unBlockTeacher = async (req, res) => {
     try {
-        const user = await teacherModel.findOne({ _id: req.params.teacherId });
+        const user = await Teacher.findOne({ _id: req.params.teacherId });
         if (user) {
-            teacherModel.updateOne({ _id: req.params.teacherId }, {
+            Teacher.updateOne({ _id: req.params.teacherId }, {
                 $set: {
                     status: true
                 }
@@ -327,4 +326,60 @@ const changeGroupStatus = async(req,res)=>{
     }
 }
 
-module.exports = { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher, getAllUsers, blockUser, unBlockUser, unBlockTeacher, getAllCourse, getAllCommunity, getAllGroups, changeCommunityStatus, changeCourseStatus, changeGroupStatus }
+const getDashboardDetails=async(req,res)=>{
+    try{
+        let studentCount=await User.find().count();
+        let teacherCount=await Teacher.find().count();
+        let courseCount=await Course.find().count();
+        let communityCount=await Community.find().count();
+
+        //get sudent details based on joined month
+        let studentJoinedDetails = await User.aggregate([
+            {
+                $group: {
+                    _id: { $month: "$createdAt" },
+                    count: { $sum: 1 }
+                } 
+            },
+            {
+                $project: {
+                    _id: 0,
+                    month: "$_id",
+                    count: 1
+                }
+            },
+            {
+                $sort: { month: 1 }
+            },
+            {
+                $group: {
+                    _id: null,
+                    data: { $push: "$count" }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    data: 1
+                }
+            }
+        ]);
+
+        
+        let totalOrders = await Order.aggregate([
+            {
+                $group: {
+                    _id: { $month: "$course" },
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        res.status(200).json({ studentCount, teacherCount, courseCount, communityCount, studentJoinedDetails: studentJoinedDetails[0].data, orderCount: totalOrders[0].count })
+    } catch (err) {
+        console.log(err);
+        res.status(404).json({ status: false, message: err.message });
+    }
+}
+
+module.exports = { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher, getAllUsers, blockUser, unBlockUser, unBlockTeacher, getAllCourse, getAllCommunity, getAllGroups, changeCommunityStatus, changeCourseStatus, changeGroupStatus, getDashboardDetails }

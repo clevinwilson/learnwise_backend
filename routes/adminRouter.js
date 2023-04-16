@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher, getAllUsers, blockUser, unBlockUser, unBlockTeacher, getAllCourse, getAllCommunity, getAllGroups, changeCommunityStatus, changeCourseStatus, changeGroupStatus } =require('../controller/adminController');
+const { doLogin, addTeacher, authAdmin, getAllTeachers, blockTeacher, getAllUsers, blockUser, unBlockUser, unBlockTeacher, getAllCourse, getAllCommunity, getAllGroups, changeCommunityStatus, changeCourseStatus, changeGroupStatus, getDashboardDetails } =require('../controller/adminController');
 const {verifyAdminLogin} = require('../middleware/AuthAdmin');
 const paginatedResults =require('../middleware/paginatedResults')
 
@@ -33,7 +33,8 @@ router.get('/community/change-status/:id/:status',verifyAdminLogin,changeCommuni
 router.get('/group',verifyAdminLogin,paginatedResults() ,getAllGroups);
 router.get('/group/change-status/:id/:status',verifyAdminLogin,changeGroupStatus);
 
-//pagination
+//dashboard
+router.get('/dashboard',verifyAdminLogin,getDashboardDetails)
 
 
 
