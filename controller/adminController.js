@@ -9,7 +9,7 @@ const User = require('../models/userModel');
 const Course = require('../models/courseModel');
 const Community = require('../models/communityModel');
 const Group = require('../models/groupModel');
-const Order = require('../models/orderModel')
+const Order = require('../models/orderModel');
 
 
 const createTocken = (id) => {

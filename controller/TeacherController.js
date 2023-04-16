@@ -1,9 +1,11 @@
 const jwt = require('jsonwebtoken');
 const maxAge = 3 * 24 * 60 * 60;
 const bcrypt = require('bcrypt');
-const teacherModel = require('../models/teacherModel');
+const Teacher = require('../models/teacherModel');
 const secret_key = process.env.SECRET_KEY;
-
+const User =require('../models/userModel');
+const Order = require('../models/orderModel');
+const Course =require('../models/courseModel')
 
 const createTocken = (id) => {
     return jwt.sign({ id }, secret_key, {
@@ -15,7 +17,7 @@ const createTocken = (id) => {
 const doLogin = async (req, res, next) => {
     try{
         const { email, password } = req.body;
-        const teacher = await teacherModel.findOne({ email: email });
+        const teacher = await Teacher.findOne({ email: email });
         if (teacher) {
             const validPassword = await bcrypt.compare(password, teacher.password);
             if (validPassword) {
@@ -48,7 +50,7 @@ const teacherAuth=(req,res)=>{
                 if (err) {
                     res.json({ status: false, message: "Permission not allowed" });
                 } else {
-                    const teacher = teacherModel.findById({ _id: decoded.id });
+                    const teacher = Teacher.findById({ _id: decoded.id });
                     if (teacher) {
                         res.json({ status: true, message: "Authorized" })
                     } else {
@@ -67,12 +69,12 @@ const teacherAuth=(req,res)=>{
 
 const changePassword=async(req,res)=>{
     try{
-        let teacher=await teacherModel.findOne({_id:res.teacherId});
+        let teacher=await Teacher.findOne({_id:res.teacherId});
         if(teacher){
             const validPassword = await bcrypt.compare(req.body.oldpassword, teacher.password);
            if(validPassword){
                const newPassword = await bcrypt.hash(req.body.password, 10);
-               teacherModel.updateOne({ _id: res.teacherId }, {
+               Teacher.updateOne({ _id: res.teacherId }, {
                    $set: {
                        password: newPassword
                    }
@@ -91,8 +93,53 @@ const changePassword=async(req,res)=>{
 }
 
 
+const getDashboardDetails = async (req, res) => {
+    try {
+        let studentCount = await User.find().count();
+        let orderCount = await Order.find({ teacher: res.teacherId }).count();
+        let courseCount = await Course.find({ teacher: res.teacherId }).count();
+
+        //get sudent details based on joined month
+        let revenueDetails = await Order.aggregate([
+            {
+                $group: {
+                    _id: { $month: "$purchase_date" },
+                    total: { $sum: '$total' }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    month: "$_id",
+                    total: 1
+                }
+            },
+            {
+                $sort: { month: 1 }
+            },
+            {
+                $group: {
+                    _id: null,
+                    data: { $push: "$total" }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    data: 1
+                }
+            }
+        ]);
+        res.status(200).json({ studentCount, orderCount, courseCount, revenueDetails: revenueDetails[0].data })
+    } catch (err) {
+        console.log(err);
+        res.status(404).json({ status: false, message: err.message });
+    }
+}
 
 
 
 
-module.exports = { doLogin, teacherAuth, changePassword }
+
+
+module.exports = { doLogin, teacherAuth, changePassword, getDashboardDetails }

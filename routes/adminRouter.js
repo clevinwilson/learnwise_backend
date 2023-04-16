@@ -34,7 +34,7 @@ router.get('/group',verifyAdminLogin,paginatedResults() ,getAllGroups);
 router.get('/group/change-status/:id/:status',verifyAdminLogin,changeGroupStatus);
 
 //dashboard
-router.get('/dashboard',verifyAdminLogin,getDashboardDetails)
+router.get('/dashboard',verifyAdminLogin,getDashboardDetails);
 
 
 
