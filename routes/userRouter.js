@@ -73,7 +73,7 @@ router.get('/listing');
 //account 
 router.get('/account',verifyLogin,getUserDetails);
 router.patch('/update-profile',verifyLogin,updateUserProfile)
-router.patch('/udate-avatar',verifyLogin,uploadAvatarImage,updateUserAvatar)
+router.patch('/update-avatar',verifyLogin,uploadAvatarImage,updateUserAvatar)
 
 
 

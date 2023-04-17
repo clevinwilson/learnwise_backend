@@ -57,26 +57,28 @@ const doSignup = async (req, res, next) => {
 }
 
 const doLogin = async (req, res, next) => {
-    const { email, password } = req.body;
-    const user = await userModel.findOne({ email: email }, { password :0});
-    if (user) {
-        const validPassword = await bcrypt.compare(password, user.password);
-        if (validPassword) {
-            const token = createTocken(user._id);
+   try{
+       const { email, password } = req.body;
+       const user = await userModel.findOne({ email: email });
+       if (user) {
+           const validPassword = await bcrypt.compare(password, user.password);
+           if (validPassword) {
+               const token = createTocken(user._id);
 
-            res.status(200).json({ user, token, login: true });
-        } else {
-            res.json({ login: false, message: "Incorrect username or password" });
-        }
-    } else {
-
-        res.json({ message: "Email not exists", login: false })
-    }
+               res.status(200).json({ user, token, login: true });
+           } else {
+               res.json({ login: false, message: "Incorrect username or password" });
+           }
+       } else {
+           res.json({ message: "Email not exists", login: false })
+       }
+   }catch(err){
+    console.log(err);
+       res.json({ message: err, login: false })
+   }
 }
 
 const googleAuth = (req, res) => {
-
-
     if (req.body.access_token) {
         axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${req.body.access_token}`).then(async (response) => {
 
@@ -88,9 +90,7 @@ const googleAuth = (req, res) => {
 
             if (user) {
                 const token = createTocken(user._id);
-
                 res.status(200).json({ created: true, user, token, message: "Login Success" })
-
             } else {
                 const newUser = await User.create({
                     googleId: response.data.id,
@@ -102,9 +102,7 @@ const googleAuth = (req, res) => {
                     password: response.data.id
                 });
                 const token = createTocken(newUser._id);
-
                 res.status(200).json({ created: true, user:newUser, token, message: "Signup Success" })
-
             }
         })
     } else {
