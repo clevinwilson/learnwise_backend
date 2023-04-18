@@ -5,7 +5,7 @@ const { createCommunity, getAllCommunity, joinCommunity, getJoinedCommunit, getC
 const { getTopCourse, getCourseDetails, getAllCourses, getEnrolledCourse, isCourseEnrolled, search } = require('../controller/courseController');
 const { doPayment, verifyPayment, cancelOrder } = require('../controller/paymentController');
 const { verifyLogin } = require('../middleware/AuthUser');
-const { uploadCommuniyImage, postImage, uploadGroupImage, uploadAvatarImage } = require('../middleware/image-upload');
+const {uploadImage } = require('../middleware/image-upload');
 const { createGroup, getCommunityGroups, joinGroup, getJoinedGroups, getAllGroups } = require('../controller/groupController');
 const { createMessage, getMessages } = require('../controller/messageController');
 const { getUserDetails, updateUserProfile, updateUserAvatar } = require('../controller/userController');
@@ -44,20 +44,20 @@ router.get('/cancel-payment/:orderId', cancelOrder);
 router.get('/search', search);
 
 //community
-router.post('/create-community', verifyLogin, uploadCommuniyImage, createCommunity);
+router.post('/create-community', verifyLogin, uploadImage("./public/images/community"), createCommunity);
 router.get('/community', getAllCommunity);
 router.put('/join-community', verifyLogin, joinCommunity);
 router.get('/joined-community', verifyLogin, getJoinedCommunit);
 router.get('/community-details/:communityId', verifyLogin, getCommunityDetails);
-router.post('/create-community/post', verifyLogin, postImage, createCommunityPost);
+router.post('/create-community/post', verifyLogin, uploadImage('./public/images/post'), createCommunityPost);
 router.get('/community/feeds/:communityId', verifyLogin, getCommunityFeeds);
 router.get('/community/members/:communityId', verifyLogin, getCommunityMembers);
-router.post('/edit-community', verifyLogin, uploadCommuniyImage, editCommunity);
+router.post('/edit-community', verifyLogin, uploadImage("./public/images/community"), editCommunity);
 router.get('/community/leave/:communityId', verifyLogin, leaveFromCommunity);
 router.get('/commuinty/delete/:communityId', verifyLogin, deleteCommunity)
 
 //group
-router.post('/create-group', verifyLogin, uploadGroupImage, createGroup);
+router.post('/create-group', verifyLogin, uploadImage('./public/images/group'), createGroup);
 router.get('/community/groups/:communityId', verifyLogin, getCommunityGroups);
 router.get('/community/groups/join/:communityId/:groupId', verifyLogin, joinGroup);
 router.get('/community/group/joinedGroups/',verifyLogin,getJoinedGroups);
@@ -73,7 +73,7 @@ router.get('/listing');
 //account 
 router.get('/account',verifyLogin,getUserDetails);
 router.patch('/update-profile',verifyLogin,updateUserProfile)
-router.patch('/update-avatar',verifyLogin,uploadAvatarImage,updateUserAvatar)
+router.patch('/update-avatar', verifyLogin, uploadImage("./public/images/user"),updateUserAvatar)
 
 
 

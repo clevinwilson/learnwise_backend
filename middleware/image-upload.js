@@ -9,74 +9,29 @@ const fileFilter = (req, file, cb) => {
         file.mimetype == 'image/gif' ||
         file.mimetype == 'image/webp' ||
         file.mimetype == 'image/avif'
-
     ) {
         cb(null, true)
     }
     else {
-        cb(null, false);
-        cb(new Error('Only jpeg,  jpg , png, avif and gif Image allow'))
+        const err = new multer.MulterError();
+        err.code = 'LIMIT_FILE_TYPE';
+        err.message = 'Only jpeg,  jpg , png, avif and gif Image allow';
+        return cb(err, false);
     }
 };
 
-
-//uploads course img
-const courseStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, "./public/images/course/thumbnail");
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname)
-    }
-})
-const uploadCourseImage = multer({ storage: courseStorage }).fields([{ name: 'image', maxCount: 1 }]);
-
-//upload community image
-const communityStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, "./public/images/community");
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname)
-    }
-})
-const uploadCommuniyImage = multer({ storage: communityStorage }).fields([{ name: 'image', maxCount: 1 }]);
+//image upload
+const uploadImage = (path) => {
+    const storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, path);
+        },
+        filename: function (req, file, cb) {
+            cb(null, Date.now() + '-' + file.originalname);
+        }
+    })
+    return multer({ storage: storage, fileFilter }).fields([{ name: 'image', maxCount: 1 }]);
+}
 
 
-//community post images
-const postStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, "./public/images/post");
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname)
-    }
-})
-const postImage = multer({ storage: postStorage }).fields([{ name: 'image', maxCount: 1 }]);
-
-
-//uploat group images
-const groupStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, "./public/images/group");
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname)
-    }
-})
-const uploadGroupImage = multer({ storage: groupStorage }).fields([{ name: 'image', maxCount: 1 }]);
-
-//upload user avatar
-//uploat group images
-const avatarStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, "./public/images/user");
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname)
-    }
-})
-const uploadAvatarImage = multer({ storage: avatarStorage }).fields([{ name: 'image', maxCount: 1 }]);
-
-
-module.exports = { uploadCourseImage, uploadCommuniyImage, postImage, uploadGroupImage, uploadAvatarImage };
+module.exports = { uploadImage };
