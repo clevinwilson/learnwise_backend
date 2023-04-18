@@ -1,4 +1,5 @@
 const io = require("socket.io")();
+const User =require('../models/userModel');
 
 const socketapi = {
     io: io
@@ -14,9 +15,9 @@ io.on('connection',(socket)=>{
     });
 
     //send message
-    socket.on('sendMessage',({userId,groupId,text})=>{
-        console.log(`Message received in group ${userId}: ${text}`);
-        io.to(groupId).emit('receiveMessage', { userId, text });
+    socket.on('sendMessage',async({userId,groupId,text})=>{
+        let sender = await User.find({ _id: userId }, { firstName:1});
+        io.to(groupId).emit('receiveMessage', { sender: sender[0], groupId, text });
     })
 
     // Clean up when the client disconnects
