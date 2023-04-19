@@ -125,3 +125,20 @@ module.exports.getAllGroups = async (req, res) => {
         res.status(404).json({ status: false, message: err.message });
     }
 }
+
+//exit group 
+module.exports.exitGroup=async(req,res)=>{
+    try{
+        const group = await Group.updateOne({_id:req.params.groupId},{
+            $pull: { members :req.userId}
+        });
+        const user = await User.updateOne({ _id: req.userId }, {
+            $pull: { group: req.params.groupId }
+        });
+        if (group && user) {
+            res.status(200).json({ status: true,message:"User successfully exit" })
+        }
+    } catch (err) {
+        res.status(404).json({ status: false, message: err.message });
+    }
+}

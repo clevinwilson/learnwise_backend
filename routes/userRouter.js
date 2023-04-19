@@ -6,7 +6,7 @@ const { getTopCourse, getCourseDetails, getAllCourses, getEnrolledCourse, isCour
 const { doPayment, verifyPayment, cancelOrder } = require('../controller/paymentController');
 const { verifyLogin } = require('../middleware/AuthUser');
 const {uploadImage } = require('../middleware/image-upload');
-const { createGroup, getCommunityGroups, joinGroup, getJoinedGroups, getAllGroups } = require('../controller/groupController');
+const { createGroup, getCommunityGroups, joinGroup, getJoinedGroups, getAllGroups, exitGroup } = require('../controller/groupController');
 const { createMessage, getMessages } = require('../controller/messageController');
 const { getUserDetails, updateUserProfile, updateUserAvatar } = require('../controller/userController');
 
@@ -62,6 +62,7 @@ router.get('/community/groups/:communityId', verifyLogin, getCommunityGroups);
 router.get('/community/groups/join/:communityId/:groupId', verifyLogin, joinGroup);
 router.get('/community/group/joinedGroups/',verifyLogin,getJoinedGroups);
 router.get('/community/groups',verifyLogin,getAllGroups);
+router.get('/community/groups/exit/:groupId',verifyLogin,exitGroup);
 
 //message
 router.post('/messages',verifyLogin,createMessage);
