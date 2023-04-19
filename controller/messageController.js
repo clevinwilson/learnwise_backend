@@ -2,10 +2,10 @@ const Message = require('../models/messageModel');
 
 module.exports.createMessage=async(req,res)=>{
     try{
-        const {user,text,group}=req.body;
+        const {text,group}=req.body;
         const newMessage=new Message({
             group,
-            sender:user,
+            sender:req.userId,
             text
         })
         const savedMessage =await newMessage.save();

@@ -2,13 +2,14 @@ const express = require('express');
 const router = express.Router();
 const { generateOtp, doSignup, doLogin, googleAuth, userAuthentication } = require('../controller/authController');
 const { createCommunity, getAllCommunity, joinCommunity, getJoinedCommunit, getCommunityDetails, createCommunityPost, getCommunityFeeds, getCommunityMembers, editCommunity, leaveFromCommunity, deleteCommunity } = require('../controller/communityController');
-const { getTopCourse, getCourseDetails, getAllCourses, getEnrolledCourse, isCourseEnrolled, search } = require('../controller/courseController');
+const { getTopCourse, getCourseDetails, getAllCourses, getEnrolledCourse, isCourseEnrolled, search, getCourseFullDetails } = require('../controller/courseController');
 const { doPayment, verifyPayment, cancelOrder } = require('../controller/paymentController');
 const { verifyLogin } = require('../middleware/AuthUser');
 const {uploadImage } = require('../middleware/image-upload');
 const { createGroup, getCommunityGroups, joinGroup, getJoinedGroups, getAllGroups, exitGroup } = require('../controller/groupController');
 const { createMessage, getMessages } = require('../controller/messageController');
 const { getUserDetails, updateUserProfile, updateUserAvatar } = require('../controller/userController');
+const { checkUserEnrolledCourse } = require('../middleware/checkCourseEnrolled');
 
 
 
@@ -27,9 +28,10 @@ router.post('/login/google', googleAuth);
 
 //course router
 router.get('/top-course', getTopCourse);
-router.get('/course-details/:courseId', getCourseDetails);
+router.get('/course-details/:courseId',getCourseDetails);
 router.get('/course', getAllCourses);
 router.get('/is-course-enrolled/:courseId', verifyLogin, isCourseEnrolled);
+router.get('/course/learn/:courseId', verifyLogin, checkUserEnrolledCourse, getCourseFullDetails)
 
 ///enrolled course
 router.get('/enrolled-course', verifyLogin, getEnrolledCourse);

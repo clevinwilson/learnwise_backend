@@ -14,7 +14,7 @@ const addCourse = async (req, res) => {
             category: req.body.category,
             duration: req.body.duration,
             language: req.body.language,
-            about:"About Java",
+            about: "About Java",
             price: Number(req.body.price),
             description: req.body.description,
             image: req.files.image[0],
@@ -49,7 +49,7 @@ const getCourse = async (req, res) => {
 
 const deleteCourse = async (req, res) => {
     try {
-        courseModel.findOneAndDelete({teacher:res.teacherId, _id: req.params.courseId })
+        courseModel.findOneAndDelete({ teacher: res.teacherId, _id: req.params.courseId })
             .then((response) => {
                 res.status(200).json({ status: true, message: "Course deleted successfully " })
             })
@@ -85,10 +85,8 @@ const getTopCourse = async (req, res) => {
 
 const getCourseDetails = async (req, res) => {
     try {
-        courseModel.findById({ _id: req.params.courseId }).populate('teacher').lean().then((response) => {
-
+        courseModel.findOne({ _id: req.params.courseId }, { 'course.lessons.videoUrl': 0, 'course.lessons._id': 0 }).populate('teacher').lean().then((response) => {
             res.status(200).json({ status: true, courseDetails: response });
-
         }).catch((err) => {
             res.status(500).json({ status: false, message: "something went wrong " });
         })
@@ -98,7 +96,7 @@ const getCourseDetails = async (req, res) => {
     }
 }
 
-const getAllCourses=async(req,res)=>{
+const getAllCourses = async (req, res) => {
     try {
         courseModel.find({ status: true }).populate('teacher').lean().then((response) => {
             res.status(200).json({ status: true, course: response });
@@ -113,80 +111,80 @@ const getAllCourses=async(req,res)=>{
     }
 }
 
-const getEnrolledCourse=async(req,res)=>{
-    try{
+const getEnrolledCourse = async (req, res) => {
+    try {
         let enrolledCourse = await orderModel.find({ user: req.userId }).populate('teacher').populate('course')
-        res.status(200).json({ status: true, enrolledCourse});
+        res.status(200).json({ status: true, enrolledCourse });
 
-    }catch(err){
+    } catch (err) {
         res.status(500).json({ status: false, message: "Internal server error" });
 
     }
 }
 
-const isCourseEnrolled=(req,res)=>{
-    try{
-         orderModel.find({user:req.userId,course:req.params.courseId}).then((response)=>{
-            if(response[0]){
+const isCourseEnrolled = (req, res) => {
+    try {
+        orderModel.find({ user: req.userId, course: req.params.courseId }).then((response) => {
+            if (response[0]) {
                 res.status(200).json({ enrolled: true, message: "Course already  exist" });
-            }else{
+            } else {
                 res.status(200).json({ enrolled: false, message: "Course not  exist" });
             }
-         })
-    }catch(err){
+        })
+    } catch (err) {
         res.status(500).json({ status: false, message: "Internal server error" });
 
     }
 }
 
-const search=(req,res)=>{
-    try{
+const search = (req, res) => {
+    try {
         key = req.query.q.replace(/[^a-zA-Z ]/g, "")
         courseModel.find({ name: { $regex: key, $options: 'i' } }).then((response) => {
-            res.status(200).json({status:true, result:response});
+            res.status(200).json({ status: true, result: response });
         })
     } catch (err) {
         res.status(500).json({ status: false, message: "Internal server error" });
     }
 }
 
-const getCourseDetailsForTeacher=(req,res)=>{
-    try{
-        courseModel.findById({ _id: req.params.courseId,teacher:res.teacherId }).then((response) => {
+const getCourseDetailsForTeacher = (req, res) => {
+    try {
+        courseModel.findById({ _id: req.params.courseId, teacher: res.teacherId }).then((response) => {
             res.status(200).json({ status: true, courseDetails: response });
         }).catch((err) => {
             res.status(500).json({ status: false, message: "something went wrong " });
         })
-    }catch(err){
+    } catch (err) {
         res.status(500).json({ status: false, message: "Internal server error" });
     }
 }
 
-const EditCourseDetails=async(req,res)=>{
+const EditCourseDetails = async (req, res) => {
     try {
         console.log(req.body);
-        let image={};
-        let course = await courseModel.findOne({ _id: req.body.courseId, teacher:res.teacherId});
-        if(req.files.image){
+        let image = {};
+        let course = await courseModel.findOne({ _id: req.body.courseId, teacher: res.teacherId });
+        if (req.files.image) {
             req.files.image[0].path = req.files.image[0].path.replace('public\\', "");
-            image=req.files.image[0]
-        }else{
-            image=course.image;
+            image = req.files.image[0]
+        } else {
+            image = course.image;
         }
-        if(course){
-            courseModel.updateOne({ _id: req.body.courseId, teacher: res.teacherId },{
-                $set:{
-                    name:req.body.name,
-                    about:req.body.about,
-                    category:req.body.category,
-                    duration:req.body.duration,
-                    language:req.body.language,
-                    price:req.body.price,
-                    description:req.body.description,
-                    course:req.body.course,
+        if (course) {
+            courseModel.updateOne({ _id: req.body.courseId, teacher: res.teacherId }, {
+                $set: {
+                    name: req.body.name,
+                    about: req.body.about,
+                    category: req.body.category,
+                    duration: req.body.duration,
+                    language: req.body.language,
+                    price: req.body.price,
+                    description: req.body.description,
+                    course: req.body.course,
                     image
                 }
-            }).then((response)=>{
+            }).then((response) => {
                 res.status(200).json({ status: true, message: "Course updated successfully" });
 
             })
@@ -196,4 +194,18 @@ const EditCourseDetails=async(req,res)=>{
     }
 }
 
-module.exports = { addCourse, getCourse, deleteCourse, getTopCourse, getCourseDetails, getAllCourses, getEnrolledCourse, isCourseEnrolled, search, getCourseDetailsForTeacher, EditCourseDetails }
+
+const getCourseFullDetails=async(req,res)=>{
+    try {
+        courseModel.findOne({ _id: req.params.courseId }).populate('teacher').lean().then((response) => {
+            res.status(200).json({ status: true, courseDetails: response });
+        }).catch((err) => {
+            res.status(500).json({ status: false, message: "something went wrong " });
+        })
+    } catch (err) {
+        res.status(500).json({ status: false, message: "Internal server error" });
+
+    }
+}
+
+module.exports = { addCourse, getCourse, deleteCourse, getTopCourse, getCourseDetails, getAllCourses, getEnrolledCourse, isCourseEnrolled, search, getCourseDetailsForTeacher, EditCourseDetails, getCourseFullDetails }
