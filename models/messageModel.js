@@ -10,9 +10,16 @@ const MessageSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Users"
         },
+        type:{
+            type:String,
+            require:true
+        },
         text: {
             type: String,
         },
+        image:{
+            type:String
+        }
     },
     { timestamps: true }
 )
