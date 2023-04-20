@@ -50,11 +50,11 @@ const teacherAuth=(req,res)=>{
                 if (err) {
                     res.json({ status: false, message: "Permission not allowed" });
                 } else {
-                    const teacher = Teacher.findById({ _id: decoded.id });
+                    const teacher = Teacher.findById({ _id: decoded.id,status:true });
                     if (teacher) {
                         res.json({ status: true, message: "Authorized" })
                     } else {
-                        res.json({ status: false, message: "Admin not exists" });
+                        res.json({ status: false, message: "teacher not exists" });
                     }
                 }
             });

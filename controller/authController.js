@@ -61,14 +61,18 @@ const doLogin = async (req, res, next) => {
        const { email, password } = req.body;
        const user = await userModel.findOne({ email: email });
        if (user) {
-           const validPassword = await bcrypt.compare(password, user.password);
-           if (validPassword) {
-               const token = createTocken(user._id);
+         if(user.status){
+             const validPassword = await bcrypt.compare(password, user.password);
+             if (validPassword) {
+                 const token = createTocken(user._id);
 
-               res.status(200).json({ user, token, login: true });
-           } else {
-               res.json({ login: false, message: "Incorrect username or password" });
-           }
+                 res.status(200).json({ user, token, login: true });
+             } else {
+                 res.json({ login: false, message: "Incorrect username or password" });
+             }
+         }else{
+             res.json({ status: "Blocked", message:"Account suspended"})
+         }
        } else {
            res.json({ message: "Email not exists", login: false })
        }
@@ -79,34 +83,42 @@ const doLogin = async (req, res, next) => {
 }
 
 const googleAuth = (req, res) => {
-    if (req.body.access_token) {
-        axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${req.body.access_token}`).then(async (response) => {
+    try{
+        if (req.body.access_token) {
+            axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${req.body.access_token}`).then(async (response) => {
 
-            const user = await User.findOne({ googleId: response.data.id, loginWithGoogle: true }, { password:0}).catch((err) => {
-                console.log("Error Signup");
-                res.status(500).json({ created: false, message: "Internal server error" })
-            });
-
-
-            if (user) {
-                const token = createTocken(user._id);
-                res.status(200).json({ created: true, user, token, message: "Login Success" })
-            } else {
-                const newUser = await User.create({
-                    googleId: response.data.id,
-                    firstName: response.data.given_name,
-                    lastName: response.data.family_name,
-                    email: response.data.email,
-                    loginWithGoogle: true,
-                    picture: response.data.picture,
-                    password: response.data.id
+                const user = await User.findOne({ googleId: response.data.id, loginWithGoogle: true }, { password: 0 }).catch((err) => {
+                    console.log("Error Signup");
+                    res.status(500).json({ created: false, message: "Internal server error" })
                 });
-                const token = createTocken(newUser._id);
-                res.status(200).json({ created: true, user:newUser, token, message: "Signup Success" })
-            }
-        })
-    } else {
-        res.status(401).json({ message: "Not authorized" });
+
+                if (user.status == false) {
+                    res.json({ status: "Blocked", message: "Account suspended" })
+                }else{
+                    if (user) {
+                        const token = createTocken(user._id);
+                        res.status(200).json({ created: true, user, token, message: "Login Success" })
+                    } else {
+                        const newUser = await User.create({
+                            googleId: response.data.id,
+                            firstName: response.data.given_name,
+                            lastName: response.data.family_name,
+                            email: response.data.email,
+                            loginWithGoogle: true,
+                            picture: response.data.picture,
+                            password: response.data.id
+                        });
+                        const token = createTocken(newUser._id);
+                        res.status(200).json({ created: true, user: newUser, token, message: "Signup Success" })
+                    }
+                }
+            })
+        } else {
+            res.status(401).json({ message: "Not authorized" });
+        }
+    }catch(err){
+        console.log(err);
+        res.status(401).json({ message: "Error" });
     }
 }
 
@@ -117,13 +129,10 @@ const userAuthentication=(req,res)=>{
         if (authHeader) {
             const token = authHeader.split(' ')[1];
             jwt.verify(token, secret_key, async (err, decoded) => {
-                // console.log(decoded.iat);
-                // console.log(decoded);
-
                 if (err) {
                     res.json({ status: false, message: "Unauthorized" });
                 } else {
-                    const user =await userModel.findOne({ _id: decoded.id });
+                    const user =await userModel.findOne({ _id: decoded.id,status:true });
                     if (user) {
                         res.status(200).json({ status: true,user, message: "Authorized" });
                     } else {
