@@ -16,14 +16,15 @@ io.on('connection',(socket)=>{
 
     //send message
     socket.on('sendMessage',async({userId,groupId,text})=>{
-        let sender = await User.find({ _id: userId }, { firstName:1});
+        let sender = await User.find({ _id: userId }, { firstName: 1, picture:1});
         io.to(groupId).emit('receiveMessage', { sender: sender[0], groupId, text });
     })
 
 
     //send image
     socket.on("sendImage", async (data) => {
-        let sender = await User.find({ _id: data.sender }, { firstName: 1 });
+        let sender = await User.find({ _id: data.sender }, { firstName: 1, picture:1 });
+        
         io.to(data.group).emit('receiveMessage', { sender: sender[0], groupId: data.group,type:data.type,image:data.image, text: data.text });
     });
 
