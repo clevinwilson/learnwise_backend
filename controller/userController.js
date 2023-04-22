@@ -25,7 +25,9 @@ module.exports.updateUserProfile=async(req,res)=>{
 
 module.exports.updateUserAvatar=async(req,res)=>{
     try{
+        console.log(req.files);
         const image = process.env.BASE_URL+ req.files.image[0].path.replace('public\\', "/");
+        console.log(image);
         const updateUser = await User.updateOne({ _id: req.userId }, {
             $set: {
                 picture: image
