@@ -6,7 +6,7 @@ const orderModel = require('../models/orderModel');
 
 const addCourse = async (req, res) => {
     try {
-        req.files.image[0].path = req.files.image[0].path.replace('public\\', "");
+        req.files.image[0].path = req.files.image[0].path.replace('public/', "");
 
         const newCourse = new Course({
             name: req.body.name,
@@ -166,7 +166,7 @@ const EditCourseDetails = async (req, res) => {
         let image = {};
         let course = await courseModel.findOne({ _id: req.body.courseId, teacher: res.teacherId });
         if (req.files.image) {
-            req.files.image[0].path = req.files.image[0].path.replace('public\\', "");
+            req.files.image[0].path = req.files.image[0].path.replace('public/', "");
             image = req.files.image[0]
         } else {
             image = course.image;

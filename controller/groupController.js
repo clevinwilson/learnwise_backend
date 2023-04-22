@@ -14,7 +14,7 @@ const handleError = (err) => {
 
 
 module.exports.createGroup = async (req, res) => {
-    req.files.image[0].path = req.files.image[0].path.replace('public\\', "");
+    req.files.image[0].path = req.files.image[0].path.replace('public/', "");
     try {
         let newGroup = new Group({
             name: req.body.name,

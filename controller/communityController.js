@@ -20,7 +20,7 @@ const handleError = (err) => {
 
 module.exports.createCommunity = async (req, res) => {
     try {
-        req.files.image[0].path = req.files.image[0].path.replace('public\\', "");
+        req.files.image[0].path = req.files.image[0].path.replace('public/', "");
         const newCommunity = new Community({
             name: req.body.name,
             type: req.body.type,
@@ -142,7 +142,7 @@ module.exports.createCommunityPost = async (req, res) => {
         }
         if (req.files.image) {
             post.image = req.files.image[0]
-            req.files.image[0].path = req.files.image[0].path.replace('public\\', "");
+            req.files.image[0].path = req.files.image[0].path.replace('public/', "");
 
         }
 
@@ -219,7 +219,7 @@ module.exports.editCommunity = async (req, res) => {
             //seting image
             if (req.files.image) {
                 image = req.files.image[0];
-                req.files.image[0].path = req.files.image[0].path.replace('public\\', "");
+                req.files.image[0].path = req.files.image[0].path.replace('public/', "");
 
             } else {
                 image = community.image;

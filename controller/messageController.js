@@ -29,7 +29,7 @@ module.exports.getMessages = async (req, res) => {
 
 module.exports.sendImage = async (req, res) => {
     try {
-        req.files.image[0].path = req.files.image[0].path.replace('public\\', "");
+        req.files.image[0].path = req.files.image[0].path.replace('public/', "");
         if (req.files) {
             const newMessage = new Message({
                 group: req.body.group,
