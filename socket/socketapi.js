@@ -1,4 +1,5 @@
 const io = require("socket.io")();
+io.origins('*:*');
 const User =require('../models/userModel');
 
 const socketapi = {
