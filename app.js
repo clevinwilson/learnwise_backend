@@ -85,7 +85,7 @@ const server=app.listen(process.env.PORT, () => {
 //connection socket io
 socketapi.io.attach(server, {
   cors: {
-    origin: process.env.CLIENT_URL
+    origin: '*'
   }
 });
 
