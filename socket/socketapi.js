@@ -26,7 +26,6 @@ io.on('connection',(socket)=>{
     socket.on("sendImage", async (data) => {
         console.log("sendImage");
         let sender = await User.find({ _id: data.sender }, { firstName: 1, picture:1 });
-        c
         io.to(data.group).emit('receiveMessage', { sender: sender[0], groupId: data.group,type:data.type,image:data.image, text: data.text });
     });
 
