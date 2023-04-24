@@ -44,7 +44,8 @@ const doSignup = async (req, res, next) => {
         verifyOtp(req.body.otp)
             .then(async (response) => {
                 const { firstName, email, password } = userDetais;
-                const user = await userModel.create({ firstName, email, password });
+                const picture = process.env.BASE_URL + "/images/user-avatar.png"
+                const user = await userModel.create({ firstName, email, password ,picture});
                 res.status(201).json({ status: true, message: "OTP verified successfully" })
             })
             .catch((response) => {
