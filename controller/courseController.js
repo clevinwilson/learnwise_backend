@@ -7,7 +7,6 @@ const orderModel = require('../models/orderModel');
 const addCourse = async (req, res) => {
     try {
         req.files.image[0].path = req.files.image[0].path.replace('public/', "");
-
         const newCourse = new Course({
             name: req.body.name,
             teacher: res.teacherId,
@@ -15,6 +14,8 @@ const addCourse = async (req, res) => {
             duration: req.body.duration,
             language: req.body.language,
             about: "About Java",
+            teacherRevenue: Number(req.body.price)*0.8,
+            adminRevenue: ((20 / 100) * Number(req.body.price)),
             price: Number(req.body.price),
             description: req.body.description,
             image: req.files.image[0],

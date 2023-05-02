@@ -30,6 +30,14 @@ const CourseSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    teacherRevenue:{
+        type:Number,
+        required:true
+    },
+    adminRevenue:{
+        type: Number,
+        required: true
+    },
     description: {
         type: String,
         required: true
