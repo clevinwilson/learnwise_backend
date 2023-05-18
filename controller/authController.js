@@ -17,7 +17,7 @@ const createTocken = (id) => {
     });
 }
 
-
+//generating otp for user login
 const generateOtp = async (req, res, next) => {
     try {
         let user = await userModel.findOne({ email: req.body.email });
@@ -39,6 +39,7 @@ const generateOtp = async (req, res, next) => {
     }
 }
 
+//user signup using email
 const doSignup = async (req, res, next) => {
     try {
         verifyOtp(req.body.otp)
@@ -57,6 +58,8 @@ const doSignup = async (req, res, next) => {
     }
 }
 
+
+//user login using email
 const doLogin = async (req, res, next) => {
     try {
         const { email, password } = req.body;
@@ -86,25 +89,31 @@ const doLogin = async (req, res, next) => {
     }
 }
 
+
+//user login using google Auth
 const googleAuth = (req, res) => {
     try {
         if (req.body.access_token) {
+            //fetching user details form google
             axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${req.body.access_token}`).then(async (response) => {
 
+            //checking user exist or not
                 const user = await User.findOne({ googleId: response.data.id, loginWithGoogle: true }, { password: 0 }).catch((err) => {
-                    console.log("Error Signup");
                     res.status(500).json({ created: false, message: "Internal server error" })
                 });
 
-
                 if (user) {
+                    //checking status
                     if (user.status) {
+                        //login success
                         const token = createTocken(user._id);
                         res.status(200).json({ created: true, user, token, message: "Login Success" })
                     } else {
+                        //account suspended
                         res.json({ status: "Blocked", message: "Account suspended" })
                     }
                 } else {
+                    //if user not exist creating new account
                     const newUser = await User.create({
                         googleId: response.data.id,
                         firstName: response.data.given_name,
@@ -122,12 +131,11 @@ const googleAuth = (req, res) => {
             res.status(401).json({ message: "Not authorized" });
         }
     } catch (err) {
-        console.log(err);
         res.status(401).json({ message: "Error" });
     }
 }
 
-
+//function to check user is loged in or not 
 const userAuthentication = (req, res) => {
     try {
         const authHeader = req.headers.authorization;
