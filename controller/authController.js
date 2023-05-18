@@ -60,13 +60,17 @@ const doSignup = async (req, res, next) => {
 const doLogin = async (req, res, next) => {
     try {
         const { email, password } = req.body;
+        // throwing error if values are not provided
+        if (!email || !password) throw Error("All Fields required");
+        // finding the user
         const user = await userModel.findOne({ email: email });
         if (user) {
+            //checking user status
             if (user.status) {
+                //checking user password
                 const validPassword = await bcrypt.compare(password, user.password);
                 if (validPassword) {
                     const token = createTocken(user._id);
-
                     res.status(200).json({ user, token, login: true });
                 } else {
                     res.json({ login: false, message: "Incorrect username or password" });
@@ -77,9 +81,8 @@ const doLogin = async (req, res, next) => {
         } else {
             res.json({ message: "Email not exists", login: false })
         }
-    } catch (err) {
-        console.log(err);
-        res.json({ message: err, login: false })
+    } catch (error) {
+       next(error)
     }
 }
 

@@ -16,14 +16,20 @@ const { checkUserEnrolledCourse } = require('../middleware/checkCourseEnrolled')
 
 
 /* user auth router */
+
+//user Login
 router.post('/signup', generateOtp);
+
+//otp submit 
 router.post('/otp', doSignup);
+
+//do Login section
 router.post('/login', doLogin);
 
-// user authentication
+// user authentication for each API request
 router.get('/user-authenticate', userAuthentication)
 
-//google auth router
+//google auth for user login
 router.post('/login/google', googleAuth);
 
 //course router

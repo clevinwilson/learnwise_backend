@@ -5,11 +5,10 @@ const path = require('path');
 const logger = require('morgan');
 const cors = require('cors');
 const session = require('express-session');
+const errorHandler =require('./middleware/errorHandler');
 const db = require('./config/db');
-const socketapi = require('./socket/socketapi')
+const socketapi = require('./socket/socketapi');
 const app = express();
-
-
 
 app.use(session({
   secret: 'learnwise3490283',
@@ -38,10 +37,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-//routes
-app.use('/', usersRouter);
-app.use('/admin',adminRouter);
-app.use('/teacher',teacherRouter);
+
 
 
 //db connection
@@ -52,6 +48,14 @@ db(() => {
     console.log("Database Not Connected : ", error);
   }
 });
+
+//routes
+app.use('/', usersRouter);
+app.use('/admin', adminRouter);
+app.use('/teacher', teacherRouter);
+
+// ERROR HANDLER MIDDLEWARE 
+app.use(errorHandler);
 
 
 //multer error
