@@ -139,7 +139,7 @@ const googleAuth = (req, res) => {
             res.status(401).json({ message: "Not authorized" });
         }
     } catch (error) {
-        next(error)
+        next(error);
     }
 }
 
@@ -169,7 +169,7 @@ const userAuthentication = (req, res) => {
             res.json({ status: false, message: 'Token not provided' })
         }
     } catch (error) {
-        next(error)
+        next(error);
     }
 }
 
