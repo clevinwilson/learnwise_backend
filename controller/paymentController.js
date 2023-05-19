@@ -29,7 +29,7 @@ const doPayment = async (req, res) => {
                         {
                             currency: "inr",
                             name: course.name,
-                            images: [`${process.env.BASE_URL + course.image.path}`],
+                            images: [`${process.env.BASE_URL +'/'+ course.image.path}`],
                             amount: course.price * 100,
                             quantity: 1,
 
