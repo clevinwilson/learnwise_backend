@@ -25,7 +25,7 @@ const teacherRouter = require('./routes/teacherRouter');
 //cors
 app.use(
   cors({
-    origin: ['http://localhost:4000'],
+    origin: [process.env.CLIENT_URL],
     methods: ["GET", "POST", "DELETE", "PUT","PATCH"],
     credentials: true
   })
