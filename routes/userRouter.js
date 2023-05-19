@@ -5,7 +5,7 @@ const { createCommunity, getAllCommunity, joinCommunity, getJoinedCommunit, getC
 const { getTopCourse, getCourseDetails, getAllCourses, getEnrolledCourse, isCourseEnrolled, search, getCourseFullDetails } = require('../controller/courseController');
 const { doPayment, verifyPayment, cancelOrder } = require('../controller/paymentController');
 const { verifyLogin } = require('../middleware/AuthUser');
-const {uploadImage } = require('../middleware/image-upload');
+const { uploadImage } = require('../middleware/image-upload');
 const { createGroup, getCommunityGroups, joinGroup, getJoinedGroups, getAllGroups, exitGroup } = require('../controller/groupController');
 const { createMessage, getMessages, sendImage } = require('../controller/messageController');
 const { getUserDetails, updateUserProfile, updateUserAvatar } = require('../controller/userController');
@@ -32,12 +32,23 @@ router.get('/user-authenticate', userAuthentication)
 //google auth for user login
 router.post('/login/google', googleAuth);
 
+
+
 //course router
+//get top courses
 router.get('/top-course', getTopCourse);
-router.get('/course-details/:courseId',getCourseDetails);
+
+//fetch course details
+router.get('/course-details/:courseId', getCourseDetails);
+
+//fetch all courses
 router.get('/course', getAllCourses);
+
+//checking course is enrolled or not
 router.get('/is-course-enrolled/:courseId', verifyLogin, isCourseEnrolled);
-router.get('/course/learn/:courseId', verifyLogin, checkUserEnrolledCourse, getCourseFullDetails)
+
+//fetch course details for enrolled users
+router.get('/course/learn/:courseId', verifyLogin, checkUserEnrolledCourse, getCourseFullDetails);
 
 ///enrolled course
 router.get('/enrolled-course', verifyLogin, getEnrolledCourse);
@@ -68,22 +79,22 @@ router.get('/commuinty/delete/:communityId', verifyLogin, deleteCommunity)
 router.post('/create-group', verifyLogin, uploadImage('./public/images/group'), createGroup);
 router.get('/community/groups/:communityId', verifyLogin, getCommunityGroups);
 router.get('/community/groups/join/:communityId/:groupId', verifyLogin, joinGroup);
-router.get('/community/group/joinedGroups/',verifyLogin,getJoinedGroups);
-router.get('/community/groups',verifyLogin,getAllGroups);
-router.get('/community/groups/exit/:groupId',verifyLogin,exitGroup);
+router.get('/community/group/joinedGroups/', verifyLogin, getJoinedGroups);
+router.get('/community/groups', verifyLogin, getAllGroups);
+router.get('/community/groups/exit/:groupId', verifyLogin, exitGroup);
 
 //message
-router.post('/messages',verifyLogin,createMessage);
-router.get('/messages/:groupId',verifyLogin,getMessages);
-router.post('/messages/send/file', verifyLogin, uploadImage("./public/images/messages"),sendImage)
+router.post('/messages', verifyLogin, createMessage);
+router.get('/messages/:groupId', verifyLogin, getMessages);
+router.post('/messages/send/file', verifyLogin, uploadImage("./public/images/messages"), sendImage)
 
 //pagination
 router.get('/listing');
 
 //account 
-router.get('/account',verifyLogin,getUserDetails);
-router.patch('/update-profile',verifyLogin,updateUserProfile)
-router.patch('/update-avatar', verifyLogin, uploadImage("./public/images/user"),updateUserAvatar)
+router.get('/account', verifyLogin, getUserDetails);
+router.patch('/update-profile', verifyLogin, updateUserProfile)
+router.patch('/update-avatar', verifyLogin, uploadImage("./public/images/user"), updateUserAvatar)
 
 
 

@@ -11,6 +11,7 @@ const User = require('../models/userModel');
 
 let userDetais;
 
+//generate jwt token
 const createTocken = (id) => {
     return jwt.sign({ id }, secret_key, {
         expiresIn: maxAge
@@ -20,24 +21,27 @@ const createTocken = (id) => {
 //generating otp for user login
 const generateOtp = async (req, res, next) => {
     try {
+        // throwing error if values are not provided
+        if (!req.body.email) throw Error("Email is required");
+        //Checking email is already exist 
         let user = await userModel.findOne({ email: req.body.email });
         if (!user) {
-
+            //sending otp to registered email
             sendVerificationCode(req.body.email, req)
                 .then((response) => {
-                    res.json({ status: true, message: "OTP successfully send" })
+                    res.json({ status: true, message: "OTP successfully send" });
                     userDetais = req.body;
                 }).catch((response) => {
-                    res.json({ status: false, message: "OTP not send" })
-
+                    res.json({ status: false, message: "OTP not send" });
                 })
         } else {
             res.json({ status: false, message: "Email already exists " })
         }
-    } catch (err) {
-        res.status(500).json({ serverError: true, message: "Internal server error" })
+    } catch (error) {
+        next(error);
     }
 }
+
 
 //user signup using email
 const doSignup = async (req, res, next) => {
@@ -45,16 +49,19 @@ const doSignup = async (req, res, next) => {
         verifyOtp(req.body.otp)
             .then(async (response) => {
                 const { firstName, email, password } = userDetais;
+                // throwing error if values are not provided
+                if (!firstName || !email || !password) throw Error("All Fields required");
+                //seting default picture
                 const picture = process.env.BASE_URL + "/images/user-avatar.png"
-                const user = await userModel.create({ firstName, email, password ,picture});
+                //creating new user 
+                const user = await userModel.create({ firstName, email, password, picture });
                 res.status(201).json({ status: true, message: "OTP verified successfully" })
             })
             .catch((response) => {
                 res.json({ status: false, message: "OTP not match" })
             })
-    } catch (err) {
-        res.status(500).json({ serverError: true, message: "Internal server error" })
-
+    } catch (error) {
+        next(error);
     }
 }
 
@@ -73,6 +80,7 @@ const doLogin = async (req, res, next) => {
                 //checking user password
                 const validPassword = await bcrypt.compare(password, user.password);
                 if (validPassword) {
+                    //creating twt token using user id
                     const token = createTocken(user._id);
                     res.status(200).json({ user, token, login: true });
                 } else {
@@ -85,7 +93,7 @@ const doLogin = async (req, res, next) => {
             res.json({ message: "Email not exists", login: false })
         }
     } catch (error) {
-       next(error)
+        next(error)
     }
 }
 
@@ -96,8 +104,7 @@ const googleAuth = (req, res) => {
         if (req.body.access_token) {
             //fetching user details form google
             axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${req.body.access_token}`).then(async (response) => {
-
-            //checking user exist or not
+                //checking user exist or not
                 const user = await User.findOne({ googleId: response.data.id, loginWithGoogle: true }, { password: 0 }).catch((err) => {
                     res.status(500).json({ created: false, message: "Internal server error" })
                 });
@@ -109,7 +116,7 @@ const googleAuth = (req, res) => {
                         const token = createTocken(user._id);
                         res.status(200).json({ created: true, user, token, message: "Login Success" })
                     } else {
-                        //account suspended
+                        //if status false account suspended
                         res.json({ status: "Blocked", message: "Account suspended" })
                     }
                 } else {
@@ -123,6 +130,7 @@ const googleAuth = (req, res) => {
                         picture: response.data.picture,
                         password: response.data.id
                     });
+                    //creating jwt token 
                     const token = createTocken(newUser._id);
                     res.status(200).json({ created: true, user: newUser, token, message: "Signup Success" })
                 }
@@ -130,21 +138,25 @@ const googleAuth = (req, res) => {
         } else {
             res.status(401).json({ message: "Not authorized" });
         }
-    } catch (err) {
-        res.status(401).json({ message: "Error" });
+    } catch (error) {
+        next(error)
     }
 }
 
-//function to check user is loged in or not 
+
+//function to check user is loged in or not by verifying the user details
 const userAuthentication = (req, res) => {
     try {
+        //accessing the token
         const authHeader = req.headers.authorization;
         if (authHeader) {
             const token = authHeader.split(' ')[1];
+            //verifying user token
             jwt.verify(token, secret_key, async (err, decoded) => {
                 if (err) {
                     res.json({ status: false, message: "Unauthorized" });
                 } else {
+                    //fetching user details
                     const user = await userModel.findOne({ _id: decoded.id, status: true });
                     if (user) {
                         res.status(200).json({ status: true, user, message: "Authorized" });
@@ -156,14 +168,10 @@ const userAuthentication = (req, res) => {
         } else {
             res.json({ status: false, message: 'Token not provided' })
         }
-    } catch (err) {
-        res.status(401).json({ message: "Not authorized" });
-
+    } catch (error) {
+        next(error)
     }
 }
-
-
-
 
 
 module.exports = { generateOtp, doSignup, doLogin, googleAuth, userAuthentication }
