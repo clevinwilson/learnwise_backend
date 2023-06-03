@@ -101,39 +101,46 @@ const doLogin = async (req, res, next) => {
 //user login using google Auth
 const googleAuth = (req, res) => {
     try {
+
         if (req.body.access_token) {
             //fetching user details form google
             axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${req.body.access_token}`).then(async (response) => {
                 //checking user exist or not
-                const user = await User.findOne({ googleId: response.data.id, loginWithGoogle: true }, { password: 0 }).catch((err) => {
-                    res.status(500).json({ created: false, message: "Internal server error" })
-                });
+                const user = await User.findOne({ email: response.data.email }, { password: 0 })
 
-                if (user) {
-                    //checking status
-                    if (user.status) {
-                        //login success
-                        const token = createTocken(user._id);
-                        res.status(200).json({ created: true, user, token, message: "Login Success" })
+                    if (user) {
+                        //checking user is login with google or not
+                        if (user.loginWithGoogle) {
+                            //checking status
+                            if (user.status) {
+                                //login success
+                                const token = createTocken(user._id);
+                                res.status(200).json({ created: true, user, token, message: "Login Success" })
+                            } else {
+                                //if status false account suspended
+                                res.json({ status: "Blocked", message: "Account suspended" });
+                            }
+                        }else{
+                            res.status(404).json({ created: false, message: "Email already exists" });
+                        }
+                        
                     } else {
-                        //if status false account suspended
-                        res.json({ status: "Blocked", message: "Account suspended" })
+                        //if user not exist creating new account
+                        const newUser = await User.create({
+                            googleId: response.data.id,
+                            firstName: response.data.given_name,
+                            lastName: response.data.family_name,
+                            email: response.data.email,
+                            loginWithGoogle: true,
+                            picture: response.data.picture,
+                            password: response.data.id
+                        });
+                        //creating jwt token 
+                        const token = createTocken(newUser._id);
+                        res.status(200).json({ created: true, user: newUser, token, message: "Signup Success" })
                     }
-                } else {
-                    //if user not exist creating new account
-                    const newUser = await User.create({
-                        googleId: response.data.id,
-                        firstName: response.data.given_name,
-                        lastName: response.data.family_name,
-                        email: response.data.email,
-                        loginWithGoogle: true,
-                        picture: response.data.picture,
-                        password: response.data.id
-                    });
-                    //creating jwt token 
-                    const token = createTocken(newUser._id);
-                    res.status(200).json({ created: true, user: newUser, token, message: "Signup Success" })
-                }
+
+               
             })
         } else {
             res.status(401).json({ message: "Not authorized" });
