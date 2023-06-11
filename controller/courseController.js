@@ -1,5 +1,3 @@
-const { response } = require('express');
-const { default: mongoose } = require('mongoose');
 const courseModel = require('../models/courseModel');
 const Course = require('../models/courseModel');
 const orderModel = require('../models/orderModel');
@@ -13,7 +11,7 @@ const addCourse = async (req, res) => {
             category: req.body.category,
             duration: req.body.duration,
             language: req.body.language,
-            about: "About Java",
+            about: req.body.about,
             teacherRevenue: Number(req.body.price)*0.8,
             adminRevenue: ((20 / 100) * Number(req.body.price)),
             price: Number(req.body.price),
