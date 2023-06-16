@@ -31,9 +31,15 @@ const teacherSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        about:{
+            type:String
+        },
         status: {
             type: Boolean,
             default: true,
+        },
+        picture:{
+            type:String,
         },
         about: {
             type: String,
