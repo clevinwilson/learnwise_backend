@@ -51,9 +51,9 @@ const teacherAuth = (req, res) => {
                 if (err) {
                     res.json({ status: false, message: "Permission not allowed" });
                 } else {
-                    const teacher = Teacher.findById({ _id: decoded.id, status: true });
+                    const teacher =await Teacher.findById({ _id: decoded.id, status: true });
                     if (teacher) {
-                        res.json({ status: true, message: "Authorized" })
+                        res.json({ status: true, teacher, message: "Authorized" })
                     } else {
                         res.json({ status: false, message: "teacher not exists" });
                     }
@@ -172,16 +172,15 @@ const updateAbout = async (req, res, next) => {
         let teacher = await Teacher.findOne({ _id: res.teacherId });
         if (teacher) {
             Teacher.updateOne({ _id: res.teacherId }, {
-                $set: { about: req.body.about }
+                $set: { about: req.body.about, accountSetup: true }
             }).then((response) => {
-                res.status(200).json({ status: true, message: "About added" })
+                res.status(200).json({ status: true, teacher, message: "About added" });
             })
         } else {
-            throw new Error("Teacher Not exist")
+            res.status(404).json({ status: false, message: "Teacher Not exist" });
         }
     } catch (error) {
-        next(error)
-
+        next(error);
     }
 }
 

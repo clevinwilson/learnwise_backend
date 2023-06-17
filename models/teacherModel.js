@@ -43,6 +43,10 @@ const teacherSchema = new mongoose.Schema(
         },
         about: {
             type: String,
+        },
+        accountSetup:{
+            type:Boolean,
+            default:false
         }
     },
     { timestamps: true }
