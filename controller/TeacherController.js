@@ -162,7 +162,7 @@ const updatePhoto = async (req, res, next) => {
 
         }
     } catch (error) {
-        next(error)
+        res.status(404).json({ status: false, message: error.message });
     }
 }
 
@@ -173,7 +173,8 @@ const updateAbout = async (req, res, next) => {
         if (teacher) {
             Teacher.updateOne({ _id: res.teacherId }, {
                 $set: { about: req.body.about, accountSetup: true }
-            }).then((response) => {
+            }).then(async(response) => {
+                teacher = await Teacher.findOne({ _id: res.teacherId });
                 res.status(200).json({ status: true, teacher, message: "About added" });
             })
         } else {
