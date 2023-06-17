@@ -143,7 +143,7 @@ const getDashboardDetails = async (req, res) => {
 const updatePhoto = async (req, res, next) => {
     try {
         //checking teacher exist or not 
-        if (req.files) {
+        if (req.files.image) {
             let teacher = await Teacher.findOne({ _id: res.teacherId });
             if (teacher) {
                 let image = req.files.image[0].path.replace('public/', "");
@@ -154,14 +154,15 @@ const updatePhoto = async (req, res, next) => {
                     res.status(200).json({ status: true, message: "Image uploaded" })
                 })
             } else {
-                throw new Error("Image is required");
+                res.status(404).json({ status: false, message: "Teacher Not exist" });
+
             }
         } else {
-            throw new Error("Teacher Not exist");
+            res.status(404).json({ status: false, message: "Image is required" });
+
         }
     } catch (error) {
         next(error)
-
     }
 }
 
