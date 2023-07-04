@@ -4,7 +4,13 @@ const orderModel = require('../models/orderModel');
 
 const addCourse = async (req, res) => {
     try {
+
+        //course tags for efficent searching
+        let tags = req.body.selectedTags.map(obj => obj.label);
+
+        //removing public path form the image path
         req.files.image[0].path = req.files.image[0].path.replace('public/', "");
+
         const newCourse = new Course({
             name: req.body.name,
             teacher: res.teacherId,
@@ -17,7 +23,8 @@ const addCourse = async (req, res) => {
             price: Number(req.body.price),
             description: req.body.description,
             image: req.files.image[0],
-            course: req.body.course
+            course: req.body.course,
+            tags
         })
 
         return await newCourse.save()

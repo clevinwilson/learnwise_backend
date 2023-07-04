@@ -65,6 +65,9 @@ const CourseSchema = new mongoose.Schema({
         required:true,
     },
     createdAt: { type: Date, default: Date.now },
+    tags:{
+        type:[]
+    }
 })
 
 
