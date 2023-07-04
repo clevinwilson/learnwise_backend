@@ -18,7 +18,7 @@ const addCourse = async (req, res) => {
             duration: req.body.duration,
             language: req.body.language,
             about: req.body.about,
-            teacherRevenue: Number(req.body.price)*0.8,
+            teacherRevenue: Number(req.body.price) * 0.8,
             adminRevenue: ((20 / 100) * Number(req.body.price)),
             price: Number(req.body.price),
             description: req.body.description,
@@ -146,7 +146,13 @@ const isCourseEnrolled = (req, res) => {
 const search = (req, res) => {
     try {
         key = req.query.q.replace(/[^a-zA-Z ]/g, "")
-        courseModel.find({ name: { $regex: key, $options: 'i' } }).then((response) => {
+        courseModel.find({
+            $or: [
+                { name: { $regex: key, $options: 'i' } },
+                { tags: { $regex: key, $options: 'i' } }
+
+            ]
+        }).then((response) => {
             res.status(200).json({ status: true, result: response });
         })
     } catch (err) {
@@ -201,7 +207,7 @@ const EditCourseDetails = async (req, res) => {
 }
 
 
-const getCourseFullDetails=async(req,res)=>{
+const getCourseFullDetails = async (req, res) => {
     try {
         courseModel.findOne({ _id: req.params.courseId }).populate('teacher').lean().then((response) => {
             res.status(200).json({ status: true, courseDetails: response });
