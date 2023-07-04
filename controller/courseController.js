@@ -150,7 +150,6 @@ const search = (req, res) => {
             $or: [
                 { name: { $regex: key, $options: 'i' } },
                 { tags: { $regex: key, $options: 'i' } }
-
             ]
         }).then((response) => {
             res.status(200).json({ status: true, result: response });
@@ -194,7 +193,8 @@ const EditCourseDetails = async (req, res) => {
                     price: req.body.price,
                     description: req.body.description,
                     course: req.body.course,
-                    image
+                    image,
+                    tags: req.body.selectedTags
                 }
             }).then((response) => {
                 res.status(200).json({ status: true, message: "Course updated successfully" });
